@@ -66,7 +66,8 @@ This is a web application for generating social media content using ChatGPT. The
 
 ### Running Tests Locally
 ```bash
-# Install dependencies (first time only)
+# Install dependencies (first time setup only)
+# Note: This project has no package.json in the repo, it's created locally for testing
 npm init -y
 npm install --save-dev playwright
 npx playwright install chromium
@@ -84,7 +85,7 @@ npx playwright test --ui
 python3 -m http.server 8000
 
 # Access the application
-# Open http://localhost:8000/index.html in browser
+# Open http://localhost:8000 in browser (index.html served automatically)
 ```
 
 ### Verification
