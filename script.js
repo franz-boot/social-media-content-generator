@@ -1,5 +1,8 @@
 // Wait for DOM to load
 document.addEventListener('DOMContentLoaded', function() {
+    // Set current year in footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    
     const form = document.getElementById('contentForm');
     const resultContainer = document.getElementById('result');
     const generatedContent = document.getElementById('generatedContent');
@@ -203,11 +206,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Real-time character counter for textarea (optional enhancement)
-    const additionalInfoTextarea = document.getElementById('additionalInfo');
-    additionalInfoTextarea.addEventListener('input', function() {
-        // Could add character counter here if needed
-    });
-
+    // This is a placeholder for future functionality
+    
     // Form field animation on focus - using CSS classes
     const inputs = form.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
