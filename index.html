@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generátor obsahu pro sociální sítě - vytvořte poutavý obsah pomocí AI pro Facebook, Instagram, Twitter/X, LinkedIn a TikTok.">
     <title>Generátor obsahu pro sociální sítě</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -81,8 +82,9 @@
                         id="keywords" 
                         name="keywords" 
                         placeholder="Např. 'marketing, strategie, růst'"
+                        aria-describedby="keywords-help"
                     >
-                    <small class="help-text">Oddělte klíčová slova čárkami</small>
+                    <small id="keywords-help" class="help-text">Oddělte klíčová slova čárkami</small>
                 </div>
 
                 <div class="form-group">
@@ -108,10 +110,10 @@
                 </div>
             </form>
 
-            <div id="result" class="result-container" style="display: none;">
+            <div id="result" class="result-container" style="display: none;" aria-live="polite">
                 <h2>Vygenerovaný obsah</h2>
                 <div class="result-content">
-                    <div id="generatedContent" class="generated-text"></div>
+                    <div id="generatedContent" class="generated-text" role="region" aria-label="Vygenerovaný text"></div>
                     <div class="result-actions">
                         <button id="copyBtn" class="btn btn-small">
                             📋 Zkopírovat
