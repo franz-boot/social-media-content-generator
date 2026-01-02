@@ -13,7 +13,7 @@ This is a web application for generating social media content using ChatGPT. The
 - Python HTTP server for local development
 
 **Current Status:**
-- The application uses mock content generation (actual ChatGPT API integration is planned for future)
+- The application uses mock content generation (actual ChatGPT API integration is planned for the future)
 - Fully functional UI with form validation, content display, and copy-to-clipboard features
 - Responsive design supporting mobile and desktop viewports
 
@@ -195,7 +195,6 @@ node verify-app.js && npx playwright test
 ### CSS Architecture
 - Mobile-first responsive design
 - CSS Grid and Flexbox for layouts
-- CSS custom properties could be added for theming
 - Gradient backgrounds with modern aesthetics
 - Smooth transitions and hover effects
 
