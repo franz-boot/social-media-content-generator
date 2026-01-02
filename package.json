@@ -1,0 +1,28 @@
+{
+  "name": "social-media-content-generator",
+  "version": "1.0.0",
+  "description": "Webová aplikace pro generování obsahu na sociální síti pomocí ChatGPT",
+  "main": "index.html",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franz-boot/social-media-content-generator.git"
+  },
+  "keywords": [
+    "social-media",
+    "content-generator",
+    "chatgpt",
+    "ai"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/franz-boot/social-media-content-generator/issues"
+  },
+  "homepage": "https://github.com/franz-boot/social-media-content-generator#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}
