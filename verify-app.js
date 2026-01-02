@@ -69,9 +69,6 @@ function validateJS(filePath) {
     try {
         const content = fs.readFileSync(filePath, 'utf8');
         
-        // Check for basic syntax issues (very basic check)
-        const hasSyntaxError = content.includes('undefined') === false; // placeholder
-        
         // Check for key functions
         const hasEventListener = /addEventListener/i.test(content);
         const hasDOMContentLoaded = /DOMContentLoaded/i.test(content);

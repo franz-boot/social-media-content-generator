@@ -42,9 +42,6 @@ jobs:
           npm install --save-dev playwright
           npx playwright install chromium
       
-      # Test application in browser
+      # Test application in browser (Playwright handles server startup)
       - name: Test application in browser
-        run: |
-          python3 -m http.server 8000 &
-          sleep 2
-          npx playwright test --config=playwright.config.js || echo "Browser test completed"
+        run: npx playwright test

@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 test.describe('Social Media Content Generator - Application Launch Test', () => {
   
   test('application loads successfully', async ({ page }) => {
-    await page.goto('http://localhost:8000/index.html');
+    await page.goto('/');
     
     // Check page title
     await expect(page).toHaveTitle(/Generátor obsahu pro sociální sítě/);
@@ -13,7 +13,7 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
   });
 
   test('form is present with all required fields', async ({ page }) => {
-    await page.goto('http://localhost:8000/index.html');
+    await page.goto('/');
     
     // Check all form fields are present
     await expect(page.getByRole('textbox', { name: /Téma příspěvku/ })).toBeVisible();
@@ -26,7 +26,7 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
   });
 
   test('form validation works', async ({ page }) => {
-    await page.goto('http://localhost:8000/index.html');
+    await page.goto('/');
     
     // Try to submit empty form
     const submitButton = page.getByRole('button', { name: /Generovat obsah/ });
@@ -39,7 +39,7 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
   });
 
   test('content generation works end-to-end', async ({ page }) => {
-    await page.goto('http://localhost:8000/index.html');
+    await page.goto('/');
     
     // Fill in the form
     await page.getByRole('textbox', { name: /Téma příspěvku/ }).fill('Test topic');
@@ -63,7 +63,7 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
     // Grant clipboard permissions
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
     
-    await page.goto('http://localhost:8000/index.html');
+    await page.goto('/');
     
     // Fill and submit form
     await page.getByRole('textbox', { name: /Téma příspěvku/ }).fill('Copy test');
@@ -84,7 +84,7 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
   });
 
   test('reset button works', async ({ page }) => {
-    await page.goto('http://localhost:8000/index.html');
+    await page.goto('/');
     
     // Fill in the form
     await page.getByRole('textbox', { name: /Téma příspěvku/ }).fill('Reset test');
@@ -100,7 +100,7 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
   test('responsive design - mobile viewport', async ({ page }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('http://localhost:8000/index.html');
+    await page.goto('/');
     
     // Check that page still loads and is usable
     await expect(page.getByRole('heading', { name: /Generátor obsahu/ })).toBeVisible();

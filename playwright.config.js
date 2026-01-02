@@ -11,7 +11,7 @@ module.exports = defineConfig({
   timeout: 30000,
   
   use: {
-    baseURL: 'http://localhost:8000',
+    baseURL: 'http://localhost:8000/index.html',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
