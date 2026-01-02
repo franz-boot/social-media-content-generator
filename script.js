@@ -53,15 +53,42 @@ document.addEventListener('DOMContentLoaded', function() {
     // Copy button handler
     copyBtn.addEventListener('click', function() {
         const text = generatedContent.textContent;
-        navigator.clipboard.writeText(text)
-            .then(() => {
-                showSuccessMessage('Obsah byl zkopírován do schránky!');
-            })
-            .catch(err => {
-                console.error('Failed to copy:', err);
-                alert('Nepodařilo se zkopírovat text.');
-            });
+        
+        // Try modern clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    showSuccessMessage('Obsah byl zkopírován do schránky!');
+                })
+                .catch(err => {
+                    console.error('Clipboard API failed:', err);
+                    fallbackCopyText(text);
+                });
+        } else {
+            // Fallback for older browsers or non-HTTPS contexts
+            fallbackCopyText(text);
+        }
     });
+    
+    // Fallback copy method
+    function fallbackCopyText(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+            document.execCommand('copy');
+            showSuccessMessage('Obsah byl zkopírován do schránky!');
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            alert('Nepodařilo se zkopírovat text automaticky. Použijte Ctrl+C pro kopírování.');
+        }
+        
+        document.body.removeChild(textArea);
+    }
 
     // New content button handler
     newContentBtn.addEventListener('click', function() {
@@ -181,16 +208,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Could add character counter here if needed
     });
 
-    // Form field animation on focus
+    // Form field animation on focus - using CSS classes
     const inputs = form.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
         input.addEventListener('focus', function() {
-            this.parentElement.style.transform = 'scale(1.01)';
-            this.parentElement.style.transition = 'transform 0.2s ease';
+            this.parentElement.classList.add('form-group-focused');
         });
         
         input.addEventListener('blur', function() {
-            this.parentElement.style.transform = 'scale(1)';
+            this.parentElement.classList.remove('form-group-focused');
         });
     });
 });
