@@ -1,0 +1,17 @@
+{
+  "name": "social-media-content-generator",
+  "version": "1.0.0",
+  "description": "Webová aplikace pro generování obsahu na sociální síti pomocí ChatGPT",
+  "main": "app.test.js",
+  "scripts": {
+    "test": "playwright test",
+    "verify": "node verify-app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "playwright": "^1.57.0"
+  }
+}
