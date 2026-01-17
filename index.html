@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="cs">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generátor obsahu pro sociální sítě</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -20,13 +22,8 @@
                         <span class="label-text">Téma příspěvku</span>
                         <span class="required">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="topic" 
-                        name="topic" 
-                        placeholder="Např. 'Tipy pro produktivitu v práci'"
-                        required
-                    >
+                    <input type="text" id="topic" name="topic" placeholder="Např. 'Tipy pro produktivitu v práci'"
+                        required>
                 </div>
 
                 <div class="form-group">
@@ -76,12 +73,7 @@
                     <label for="keywords">
                         <span class="label-text">Klíčová slova (volitelné)</span>
                     </label>
-                    <input 
-                        type="text" 
-                        id="keywords" 
-                        name="keywords" 
-                        placeholder="Např. 'marketing, strategie, růst'"
-                    >
+                    <input type="text" id="keywords" name="keywords" placeholder="Např. 'marketing, strategie, růst'">
                     <small class="help-text">Oddělte klíčová slova čárkami</small>
                 </div>
 
@@ -89,12 +81,8 @@
                     <label for="additionalInfo">
                         <span class="label-text">Další informace (volitelné)</span>
                     </label>
-                    <textarea 
-                        id="additionalInfo" 
-                        name="additionalInfo" 
-                        rows="4"
-                        placeholder="Přidejte jakékoli další pokyny nebo kontext..."
-                    ></textarea>
+                    <textarea id="additionalInfo" name="additionalInfo" rows="4"
+                        placeholder="Přidejte jakékoli další pokyny nebo kontext..."></textarea>
                 </div>
 
                 <div class="form-actions">
@@ -108,7 +96,7 @@
                 </div>
             </form>
 
-            <div id="result" class="result-container" style="display: none;">
+            <div id="result" class="result-container result-hidden">
                 <h2>Vygenerovaný obsah</h2>
                 <div class="result-content">
                     <div id="generatedContent" class="generated-text"></div>
@@ -131,4 +119,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
