@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', function() {
             platform: document.getElementById('platform').value,
             tone: document.getElementById('tone').value,
             length: document.getElementById('length').value,
+            stdcPhase: document.getElementById('stdcPhase').value,
+            targetAudience: document.getElementById('targetAudience').value.trim(),
+            callToAction: document.getElementById('callToAction').value,
             keywords: document.getElementById('keywords').value.trim(),
             additionalInfo: document.getElementById('additionalInfo').value.trim()
         };
@@ -117,6 +120,10 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('Prosím vyberte délku příspěvku.');
             return false;
         }
+        if (!data.stdcPhase) {
+            alert('Prosím vyberte STDC fázi.');
+            return false;
+        }
         return true;
     }
 
@@ -150,13 +157,37 @@ document.addEventListener('DOMContentLoaded', function() {
             inspirational: 'inspirativním'
         };
 
+        const stdcDescriptions = {
+            see: { name: 'See', description: 'budování povědomí', goal: 'oslovit široké publikum a zvýšit viditelnost značky' },
+            think: { name: 'Think', description: 'zvažování', goal: 'pomoci publiku porozumět vašemu řešení' },
+            do: { name: 'Do', description: 'akce', goal: 'motivovat k okamžité akci a konverzi' },
+            care: { name: 'Care', description: 'péče', goal: 'budovat loajalitu a vztah se stávajícími zákazníky' }
+        };
+
+        const ctaTexts = {
+            learn_more: 'Zjistěte více na našem webu!',
+            sign_up: 'Zaregistrujte se ještě dnes!',
+            buy_now: 'Nakupte nyní a ušetřete!',
+            contact: 'Kontaktujte nás pro více informací!',
+            share: 'Sdílejte s přáteli!',
+            comment: 'Co si o tom myslíte? Napište do komentářů!',
+            visit_website: 'Navštivte náš web!',
+            download: 'Stáhněte si zdarma!'
+        };
+
         const emoji = platformEmojis[data.platform] || '✨';
         const toneStyle = toneStyles[data.tone] || 'přátelském';
+        const stdcInfo = stdcDescriptions[data.stdcPhase] || stdcDescriptions.see;
 
         let content = `${emoji} ${data.topic}\n\n`;
-        
-        content += `Toto je ukázkový obsah vygenerovaný v ${toneStyle} tónu pro platformu ${data.platform}.\n\n`;
-        
+
+        content += `Toto je ukázkový obsah vygenerovaný v ${toneStyle} tónu pro platformu ${data.platform}.\n`;
+        content += `📊 STDC fáze: ${stdcInfo.name} (${stdcInfo.description}) - cíl: ${stdcInfo.goal}\n\n`;
+
+        if (data.targetAudience) {
+            content += `🎯 Cílová skupina: ${data.targetAudience}\n\n`;
+        }
+
         if (data.length === 'short') {
             content += `Krátký příspěvek o tématu "${data.topic}" je ideální pro rychlé sdílení. `;
             content += `Zaujměte své publikum stručným, ale působivým sdělením. 💡\n\n`;
@@ -173,6 +204,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (data.keywords) {
             content += `🔑 Klíčová slova: ${data.keywords}\n\n`;
+        }
+
+        if (data.callToAction && ctaTexts[data.callToAction]) {
+            content += `👉 ${ctaTexts[data.callToAction]}\n\n`;
         }
 
         if (data.additionalInfo) {
