@@ -40,19 +40,20 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
 
   test('content generation works end-to-end', async ({ page }) => {
     await page.goto('/');
-    
+
     // Fill in the form
     await page.getByRole('textbox', { name: /Téma příspěvku/ }).fill('Test topic');
     await page.getByLabel(/Platforma/).selectOption('facebook');
     await page.getByLabel(/Tón příspěvku/).selectOption('friendly');
     await page.getByLabel(/Délka příspěvku/).selectOption('short');
-    
+    await page.getByLabel(/STDC fáze/).selectOption('see');
+
     // Submit form
     await page.getByRole('button', { name: /Generovat obsah/ }).click();
-    
+
     // Wait for content to be generated (with timeout for mock delay)
     await page.waitForSelector('#result', { state: 'visible', timeout: 5000 });
-    
+
     // Check that generated content is visible
     const generatedContent = page.locator('#generatedContent');
     await expect(generatedContent).toBeVisible();
