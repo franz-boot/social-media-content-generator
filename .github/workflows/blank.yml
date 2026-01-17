@@ -39,7 +39,7 @@ jobs:
       - name: Install Playwright
         run: |
           npm init -y
-          npm install --save-dev playwright
+          npm install --save-dev @playwright/test
           npx playwright install chromium
       
       # Test application in browser (Playwright handles server startup)
