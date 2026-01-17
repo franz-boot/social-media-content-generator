@@ -1,43 +1,87 @@
+// Type definitions
+interface ContentFormData {
+    topic: string;
+    platform: string;
+    tone: string;
+    length: string;
+    stdcPhase: string;
+    targetAudience: string;
+    callToAction: string;
+    keywords: string;
+    additionalInfo: string;
+}
+
+interface StrategyData {
+    brandName?: string;
+    brandMission?: string;
+    brandValues?: string;
+    usp?: string;
+    brandVoice?: string;
+    communicationPillars?: string;
+    keyMessages?: string;
+    avoidTopics?: string;
+}
+
+interface STDCInfo {
+    name: string;
+    description: string;
+    goal: string;
+}
+
 // Wait for DOM to load
 document.addEventListener('DOMContentLoaded', function() {
     // Set current year in footer
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    const yearElement = document.getElementById('currentYear');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear().toString();
+    }
 
-    const form = document.getElementById('contentForm');
-    const resultContainer = document.getElementById('result');
-    const generatedContent = document.getElementById('generatedContent');
-    const copyBtn = document.getElementById('copyBtn');
-    const newContentBtn = document.getElementById('newContentBtn');
+    const form = document.getElementById('contentForm') as HTMLFormElement | null;
+    const resultContainer = document.getElementById('result') as HTMLElement | null;
+    const generatedContent = document.getElementById('generatedContent') as HTMLElement | null;
+    const copyBtn = document.getElementById('copyBtn') as HTMLButtonElement | null;
+    const newContentBtn = document.getElementById('newContentBtn') as HTMLButtonElement | null;
 
     // Strategy form elements
-    const strategyForm = document.getElementById('strategyForm');
-    const strategyToggle = document.getElementById('strategyToggle');
-    const toggleBtn = strategyToggle.querySelector('.toggle-btn');
-    const toggleText = toggleBtn.querySelector('.toggle-text');
-    const saveStrategyBtn = document.getElementById('saveStrategyBtn');
-    const clearStrategyBtn = document.getElementById('clearStrategyBtn');
+    const strategyForm = document.getElementById('strategyForm') as HTMLFormElement | null;
+    const strategyToggle = document.getElementById('strategyToggle') as HTMLElement | null;
+    const toggleBtn = strategyToggle?.querySelector('.toggle-btn') as HTMLButtonElement | null;
+    const toggleText = toggleBtn?.querySelector('.toggle-text') as HTMLElement | null;
+    const saveStrategyBtn = document.getElementById('saveStrategyBtn') as HTMLButtonElement | null;
+    const clearStrategyBtn = document.getElementById('clearStrategyBtn') as HTMLButtonElement | null;
 
     // Strategy form toggle functionality
-    toggleBtn.addEventListener('click', function() {
-        const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-        toggleBtn.setAttribute('aria-expanded', !isExpanded);
-        strategyForm.classList.toggle('collapsed');
-        toggleText.textContent = isExpanded ? 'Rozbalit' : 'Sbalit';
-    });
+    if (toggleBtn && strategyForm && toggleText) {
+        toggleBtn.addEventListener('click', function() {
+            const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+            toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
+            strategyForm.classList.toggle('collapsed');
+            toggleText.textContent = isExpanded ? 'Rozbalit' : 'Sbalit';
+        });
+    }
 
     // Load saved strategy from localStorage
-    function loadStrategy() {
+    function loadStrategy(): void {
         const savedStrategy = localStorage.getItem('communicationStrategy');
         if (savedStrategy) {
-            const strategy = JSON.parse(savedStrategy);
-            document.getElementById('brandName').value = strategy.brandName || '';
-            document.getElementById('brandMission').value = strategy.brandMission || '';
-            document.getElementById('brandValues').value = strategy.brandValues || '';
-            document.getElementById('usp').value = strategy.usp || '';
-            document.getElementById('brandVoice').value = strategy.brandVoice || '';
-            document.getElementById('communicationPillars').value = strategy.communicationPillars || '';
-            document.getElementById('keyMessages').value = strategy.keyMessages || '';
-            document.getElementById('avoidTopics').value = strategy.avoidTopics || '';
+            const strategy: StrategyData = JSON.parse(savedStrategy);
+            const brandName = document.getElementById('brandName') as HTMLInputElement | null;
+            const brandMission = document.getElementById('brandMission') as HTMLTextAreaElement | null;
+            const brandValues = document.getElementById('brandValues') as HTMLTextAreaElement | null;
+            const usp = document.getElementById('usp') as HTMLTextAreaElement | null;
+            const brandVoice = document.getElementById('brandVoice') as HTMLSelectElement | null;
+            const communicationPillars = document.getElementById('communicationPillars') as HTMLTextAreaElement | null;
+            const keyMessages = document.getElementById('keyMessages') as HTMLTextAreaElement | null;
+            const avoidTopics = document.getElementById('avoidTopics') as HTMLTextAreaElement | null;
+
+            if (brandName) brandName.value = strategy.brandName || '';
+            if (brandMission) brandMission.value = strategy.brandMission || '';
+            if (brandValues) brandValues.value = strategy.brandValues || '';
+            if (usp) usp.value = strategy.usp || '';
+            if (brandVoice) brandVoice.value = strategy.brandVoice || '';
+            if (communicationPillars) communicationPillars.value = strategy.communicationPillars || '';
+            if (keyMessages) keyMessages.value = strategy.keyMessages || '';
+            if (avoidTopics) avoidTopics.value = strategy.avoidTopics || '';
 
             // Show saved indicator
             updateStrategySavedIndicator(true);
@@ -45,16 +89,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Save strategy to localStorage
-    function saveStrategy() {
-        const strategy = {
-            brandName: document.getElementById('brandName').value.trim(),
-            brandMission: document.getElementById('brandMission').value.trim(),
-            brandValues: document.getElementById('brandValues').value.trim(),
-            usp: document.getElementById('usp').value.trim(),
-            brandVoice: document.getElementById('brandVoice').value,
-            communicationPillars: document.getElementById('communicationPillars').value.trim(),
-            keyMessages: document.getElementById('keyMessages').value.trim(),
-            avoidTopics: document.getElementById('avoidTopics').value.trim()
+    function saveStrategy(): void {
+        const brandName = document.getElementById('brandName') as HTMLInputElement | null;
+        const brandMission = document.getElementById('brandMission') as HTMLTextAreaElement | null;
+        const brandValues = document.getElementById('brandValues') as HTMLTextAreaElement | null;
+        const usp = document.getElementById('usp') as HTMLTextAreaElement | null;
+        const brandVoice = document.getElementById('brandVoice') as HTMLSelectElement | null;
+        const communicationPillars = document.getElementById('communicationPillars') as HTMLTextAreaElement | null;
+        const keyMessages = document.getElementById('keyMessages') as HTMLTextAreaElement | null;
+        const avoidTopics = document.getElementById('avoidTopics') as HTMLTextAreaElement | null;
+
+        const strategy: StrategyData = {
+            brandName: brandName?.value.trim() || '',
+            brandMission: brandMission?.value.trim() || '',
+            brandValues: brandValues?.value.trim() || '',
+            usp: usp?.value.trim() || '',
+            brandVoice: brandVoice?.value || '',
+            communicationPillars: communicationPillars?.value.trim() || '',
+            keyMessages: keyMessages?.value.trim() || '',
+            avoidTopics: avoidTopics?.value.trim() || ''
         };
 
         localStorage.setItem('communicationStrategy', JSON.stringify(strategy));
@@ -63,116 +116,144 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Get current strategy data
-    function getStrategyData() {
+    function getStrategyData(): StrategyData | null {
         const savedStrategy = localStorage.getItem('communicationStrategy');
         return savedStrategy ? JSON.parse(savedStrategy) : null;
     }
 
     // Update saved indicator in header
-    function updateStrategySavedIndicator(saved) {
+    function updateStrategySavedIndicator(saved: boolean): void {
+        if (!strategyToggle) return;
         const existingIndicator = strategyToggle.querySelector('.strategy-saved');
         if (saved && !existingIndicator) {
             const indicator = document.createElement('span');
             indicator.className = 'strategy-saved';
             indicator.innerHTML = '✓ Uloženo';
-            strategyToggle.querySelector('h2').appendChild(indicator);
+            const h2 = strategyToggle.querySelector('h2');
+            if (h2) h2.appendChild(indicator);
         } else if (!saved && existingIndicator) {
             existingIndicator.remove();
         }
     }
 
     // Save strategy button handler
-    saveStrategyBtn.addEventListener('click', saveStrategy);
+    if (saveStrategyBtn) {
+        saveStrategyBtn.addEventListener('click', saveStrategy);
+    }
 
     // Clear strategy button handler
-    clearStrategyBtn.addEventListener('click', function() {
-        if (confirm('Opravdu chcete vymazat uloženou strategii?')) {
-            localStorage.removeItem('communicationStrategy');
-            strategyForm.reset();
-            updateStrategySavedIndicator(false);
-            showSuccessMessage('Strategie byla vymazána.');
-        }
-    });
+    if (clearStrategyBtn && strategyForm) {
+        clearStrategyBtn.addEventListener('click', function() {
+            if (confirm('Opravdu chcete vymazat uloženou strategii?')) {
+                localStorage.removeItem('communicationStrategy');
+                strategyForm.reset();
+                updateStrategySavedIndicator(false);
+                showSuccessMessage('Strategie byla vymazána.');
+            }
+        });
+    }
 
     // Load strategy on page load
     loadStrategy();
 
     // Form submission handler
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form data
-        const formData = {
-            topic: document.getElementById('topic').value.trim(),
-            platform: document.getElementById('platform').value,
-            tone: document.getElementById('tone').value,
-            length: document.getElementById('length').value,
-            stdcPhase: document.getElementById('stdcPhase').value,
-            targetAudience: document.getElementById('targetAudience').value.trim(),
-            callToAction: document.getElementById('callToAction').value,
-            keywords: document.getElementById('keywords').value.trim(),
-            additionalInfo: document.getElementById('additionalInfo').value.trim()
-        };
+    if (form) {
+        form.addEventListener('submit', function(e: Event) {
+            e.preventDefault();
 
-        // Validate form
-        if (!validateForm(formData)) {
-            return;
-        }
+            // Get form data
+            const topic = document.getElementById('topic') as HTMLInputElement | null;
+            const platform = document.getElementById('platform') as HTMLSelectElement | null;
+            const tone = document.getElementById('tone') as HTMLSelectElement | null;
+            const length = document.getElementById('length') as HTMLSelectElement | null;
+            const stdcPhase = document.getElementById('stdcPhase') as HTMLSelectElement | null;
+            const targetAudience = document.getElementById('targetAudience') as HTMLInputElement | null;
+            const callToAction = document.getElementById('callToAction') as HTMLSelectElement | null;
+            const keywords = document.getElementById('keywords') as HTMLInputElement | null;
+            const additionalInfo = document.getElementById('additionalInfo') as HTMLTextAreaElement | null;
 
-        // Show loading state
-        const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.classList.add('loading');
-        submitBtn.disabled = true;
+            const formData: ContentFormData = {
+                topic: topic?.value.trim() || '',
+                platform: platform?.value || '',
+                tone: tone?.value || '',
+                length: length?.value || '',
+                stdcPhase: stdcPhase?.value || '',
+                targetAudience: targetAudience?.value.trim() || '',
+                callToAction: callToAction?.value || '',
+                keywords: keywords?.value.trim() || '',
+                additionalInfo: additionalInfo?.value.trim() || ''
+            };
 
-        // Simulate API call (replace with actual API call to ChatGPT)
-        generateContent(formData)
-            .then(content => {
-                displayResult(content);
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
-            })
-            .catch(error => {
-                console.error('Error generating content:', error);
-                alert('Chyba při generování obsahu. Zkuste to prosím znovu.');
-                submitBtn.classList.remove('loading');
-                submitBtn.disabled = false;
-            });
-    });
+            // Validate form
+            if (!validateForm(formData)) {
+                return;
+            }
 
-    // Form reset handler
-    form.addEventListener('reset', function() {
-        resultContainer.style.display = 'none';
-    });
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+            if (submitBtn) {
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+            }
+
+            // Simulate API call (replace with actual API call to ChatGPT)
+            generateContent(formData)
+                .then(content => {
+                    displayResult(content);
+                    if (submitBtn) {
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error generating content:', error);
+                    alert('Chyba při generování obsahu. Zkuste to prosím znovu.');
+                    if (submitBtn) {
+                        submitBtn.classList.remove('loading');
+                        submitBtn.disabled = false;
+                    }
+                });
+        });
+
+        // Form reset handler
+        form.addEventListener('reset', function() {
+            if (resultContainer) {
+                resultContainer.style.display = 'none';
+            }
+        });
+    }
 
     // Copy button handler
-    copyBtn.addEventListener('click', function() {
-        const text = generatedContent.textContent;
-        
-        // Try modern clipboard API first
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text)
-                .then(() => {
-                    showSuccessMessage('Obsah byl zkopírován do schránky!');
-                })
-                .catch(err => {
-                    console.error('Clipboard API failed:', err);
-                    fallbackCopyText(text);
-                });
-        } else {
-            // Fallback for older browsers or non-HTTPS contexts
-            fallbackCopyText(text);
-        }
-    });
-    
+    if (copyBtn && generatedContent) {
+        copyBtn.addEventListener('click', function() {
+            const text = generatedContent.textContent || '';
+
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        showSuccessMessage('Obsah byl zkopírován do schránky!');
+                    })
+                    .catch(err => {
+                        console.error('Clipboard API failed:', err);
+                        fallbackCopyText(text);
+                    });
+            } else {
+                // Fallback for older browsers or non-HTTPS contexts
+                fallbackCopyText(text);
+            }
+        });
+    }
+
     // Fallback copy method
-    function fallbackCopyText(text) {
+    function fallbackCopyText(text: string): void {
         const textArea = document.createElement('textarea');
         textArea.value = text;
         textArea.style.position = 'fixed';
         textArea.style.left = '-999999px';
         document.body.appendChild(textArea);
         textArea.select();
-        
+
         try {
             document.execCommand('copy');
             showSuccessMessage('Obsah byl zkopírován do schránky!');
@@ -180,18 +261,20 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Fallback copy failed:', err);
             alert('Nepodařilo se zkopírovat text automaticky. Použijte Ctrl+C pro kopírování.');
         }
-        
+
         document.body.removeChild(textArea);
     }
 
     // New content button handler
-    newContentBtn.addEventListener('click', function() {
-        resultContainer.style.display = 'none';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    if (newContentBtn && resultContainer) {
+        newContentBtn.addEventListener('click', function() {
+            resultContainer.style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
 
     // Validate form data
-    function validateForm(data) {
+    function validateForm(data: ContentFormData): boolean {
         if (!data.topic) {
             alert('Prosím vyplňte téma příspěvku.');
             return false;
@@ -216,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Generate content (simulated - replace with actual API call)
-    function generateContent(data) {
+    function generateContent(data: ContentFormData): Promise<string> {
         return new Promise((resolve) => {
             // Simulate API delay
             setTimeout(() => {
@@ -230,8 +313,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Generate mock content based on form data
-    function generateMockContent(data, strategy) {
-        const platformEmojis = {
+    function generateMockContent(data: ContentFormData, strategy: StrategyData | null): string {
+        const platformEmojis: Record<string, string> = {
             facebook: '👥',
             instagram: '📸',
             twitter: '🐦',
@@ -239,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
             tiktok: '🎵'
         };
 
-        const toneStyles = {
+        const toneStyles: Record<string, string> = {
             professional: 'profesionálním',
             casual: 'neformálním',
             friendly: 'přátelském',
@@ -247,14 +330,14 @@ document.addEventListener('DOMContentLoaded', function() {
             inspirational: 'inspirativním'
         };
 
-        const stdcDescriptions = {
+        const stdcDescriptions: Record<string, STDCInfo> = {
             see: { name: 'See', description: 'budování povědomí', goal: 'oslovit široké publikum a zvýšit viditelnost značky' },
             think: { name: 'Think', description: 'zvažování', goal: 'pomoci publiku porozumět vašemu řešení' },
             do: { name: 'Do', description: 'akce', goal: 'motivovat k okamžité akci a konverzi' },
             care: { name: 'Care', description: 'péče', goal: 'budovat loajalitu a vztah se stávajícími zákazníky' }
         };
 
-        const ctaTexts = {
+        const ctaTexts: Record<string, string> = {
             learn_more: 'Zjistěte více na našem webu!',
             sign_up: 'Zaregistrujte se ještě dnes!',
             buy_now: 'Nakupte nyní a ušetřete!',
@@ -265,7 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
             download: 'Stáhněte si zdarma!'
         };
 
-        const brandVoiceLabels = {
+        const brandVoiceLabels: Record<string, string> = {
             expert: 'expertním a autoritativním',
             friendly: 'přátelským a přístupným',
             innovative: 'inovativním a progresivním',
@@ -352,20 +435,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Display the generated content
-    function displayResult(content) {
-        generatedContent.textContent = content;
-        resultContainer.style.display = 'block';
-        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    function displayResult(content: string): void {
+        if (generatedContent) {
+            generatedContent.textContent = content;
+        }
+        if (resultContainer) {
+            resultContainer.style.display = 'block';
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     }
 
     // Show success message
-    function showSuccessMessage(message) {
+    function showSuccessMessage(message: string): void {
         const successDiv = document.createElement('div');
         successDiv.className = 'success-message';
         successDiv.textContent = '✅ ' + message;
-        
-        resultContainer.insertBefore(successDiv, resultContainer.firstChild);
-        
+
+        if (resultContainer) {
+            resultContainer.insertBefore(successDiv, resultContainer.firstChild);
+        }
+
         setTimeout(() => {
             successDiv.remove();
         }, 3000);
@@ -373,16 +462,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Real-time character counter for textarea (optional enhancement)
     // This is a placeholder for future functionality
-    
+
     // Form field animation on focus - using CSS classes
-    const inputs = form.querySelectorAll('input, select, textarea');
-    inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement.classList.add('form-group-focused');
+    if (form) {
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function(this: HTMLElement) {
+                this.parentElement?.classList.add('form-group-focused');
+            });
+
+            input.addEventListener('blur', function(this: HTMLElement) {
+                this.parentElement?.classList.remove('form-group-focused');
+            });
         });
-        
-        input.addEventListener('blur', function() {
-            this.parentElement.classList.remove('form-group-focused');
-        });
-    });
+    }
 });

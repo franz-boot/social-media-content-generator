@@ -5,11 +5,23 @@
  * This script validates that all required files exist and are properly formatted
  */
 
-const fs = require('fs');
-const path = require('path');
+import * as fs from 'fs';
+import * as path from 'path';
+
+interface ValidationResult {
+    valid: boolean;
+    error?: string;
+    details?: Record<string, boolean>;
+}
+
+interface FileConfig {
+    path: string;
+    validator: (filePath: string) => ValidationResult;
+    type: string;
+}
 
 // ANSI color codes for output
-const colors = {
+const colors: Record<string, string> = {
     reset: '\x1b[0m',
     red: '\x1b[31m',
     green: '\x1b[32m',
@@ -17,39 +29,39 @@ const colors = {
     blue: '\x1b[34m'
 };
 
-function log(message, color = 'reset') {
+function log(message: string, color: string = 'reset'): void {
     console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-function checkFileExists(filePath) {
+function checkFileExists(filePath: string): boolean {
     try {
         fs.accessSync(filePath, fs.constants.R_OK);
         return true;
-    } catch (err) {
+    } catch {
         return false;
     }
 }
 
-function checkFileNotEmpty(filePath) {
+function checkFileNotEmpty(filePath: string): boolean {
     try {
         const stats = fs.statSync(filePath);
         return stats.size > 0;
-    } catch (err) {
+    } catch {
         return false;
     }
 }
 
-function validateHTML(filePath) {
+function validateHTML(filePath: string): ValidationResult {
     try {
         const content = fs.readFileSync(filePath, 'utf8');
-        
+
         // Basic HTML validation checks
         const hasDoctype = /<!DOCTYPE html>/i.test(content);
         const hasHtmlTag = /<html[^>]*>/i.test(content);
         const hasHeadTag = /<head[^>]*>/i.test(content);
         const hasBodyTag = /<body[^>]*>/i.test(content);
         const hasTitle = /<title[^>]*>.*<\/title>/i.test(content);
-        
+
         return {
             valid: hasDoctype && hasHtmlTag && hasHeadTag && hasBodyTag && hasTitle,
             details: {
@@ -61,18 +73,18 @@ function validateHTML(filePath) {
             }
         };
     } catch (err) {
-        return { valid: false, error: err.message };
+        return { valid: false, error: err instanceof Error ? err.message : String(err) };
     }
 }
 
-function validateJS(filePath) {
+function validateJS(filePath: string): ValidationResult {
     try {
         const content = fs.readFileSync(filePath, 'utf8');
-        
+
         // Check for key functions
         const hasEventListener = /addEventListener/i.test(content);
         const hasDOMContentLoaded = /DOMContentLoaded/i.test(content);
-        
+
         return {
             valid: hasEventListener && hasDOMContentLoaded,
             details: {
@@ -81,18 +93,18 @@ function validateJS(filePath) {
             }
         };
     } catch (err) {
-        return { valid: false, error: err.message };
+        return { valid: false, error: err instanceof Error ? err.message : String(err) };
     }
 }
 
-function validateCSS(filePath) {
+function validateCSS(filePath: string): ValidationResult {
     try {
         const content = fs.readFileSync(filePath, 'utf8');
-        
+
         // Basic CSS validation
         const hasCSSRules = /[^}]*\{[^}]*\}/.test(content);
         const hasColorDefinitions = /(color|background):/i.test(content);
-        
+
         return {
             valid: hasCSSRules && hasColorDefinitions,
             details: {
@@ -101,28 +113,31 @@ function validateCSS(filePath) {
             }
         };
     } catch (err) {
-        return { valid: false, error: err.message };
+        return { valid: false, error: err instanceof Error ? err.message : String(err) };
     }
 }
 
-function runVerification() {
+function runVerification(): number {
     log('\n🚀 Starting Application Launch Verification...\n', 'blue');
-    
+
     let allChecksPassed = true;
-    
+
     // Define required files
-    const requiredFiles = [
+    const requiredFiles: FileConfig[] = [
         { path: 'index.html', validator: validateHTML, type: 'HTML' },
         { path: 'script.js', validator: validateJS, type: 'JavaScript' },
         { path: 'styles.css', validator: validateCSS, type: 'CSS' }
     ];
-    
+
+    // Get directory of this script
+    const scriptDir = path.dirname(process.argv[1] || __filename);
+
     // Check each required file
     for (const file of requiredFiles) {
-        const filePath = path.join(__dirname, file.path);
-        
+        const filePath = path.join(scriptDir, file.path);
+
         log(`\nChecking ${file.type} file: ${file.path}`, 'yellow');
-        
+
         // Check if file exists
         if (!checkFileExists(filePath)) {
             log(`  ✗ File does not exist`, 'red');
@@ -130,7 +145,7 @@ function runVerification() {
             continue;
         }
         log(`  ✓ File exists`, 'green');
-        
+
         // Check if file is not empty
         if (!checkFileNotEmpty(filePath)) {
             log(`  ✗ File is empty`, 'red');
@@ -138,7 +153,7 @@ function runVerification() {
             continue;
         }
         log(`  ✓ File is not empty`, 'green');
-        
+
         // Run specific validator
         if (file.validator) {
             const validation = file.validator(filePath);
@@ -152,27 +167,27 @@ function runVerification() {
                 if (validation.details) {
                     for (const [key, value] of Object.entries(validation.details)) {
                         const symbol = value ? '✓' : '✗';
-                        const color = value ? 'green' : 'red';
-                        log(`    ${symbol} ${key}`, color);
+                        const colorName = value ? 'green' : 'red';
+                        log(`    ${symbol} ${key}`, colorName);
                     }
                 }
                 allChecksPassed = false;
             }
         }
     }
-    
+
     // Additional checks
     log('\n\nAdditional Checks:', 'yellow');
-    
+
     // Check if script.js is referenced in index.html
-    const indexContent = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+    const indexContent = fs.readFileSync(path.join(scriptDir, 'index.html'), 'utf8');
     if (indexContent.includes('script.js')) {
         log('  ✓ script.js is referenced in index.html', 'green');
     } else {
         log('  ✗ script.js is NOT referenced in index.html', 'red');
         allChecksPassed = false;
     }
-    
+
     // Check if styles.css is referenced in index.html
     if (indexContent.includes('styles.css')) {
         log('  ✓ styles.css is referenced in index.html', 'green');
@@ -180,7 +195,7 @@ function runVerification() {
         log('  ✗ styles.css is NOT referenced in index.html', 'red');
         allChecksPassed = false;
     }
-    
+
     // Final result
     log('\n' + '='.repeat(50), 'blue');
     if (allChecksPassed) {

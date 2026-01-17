@@ -1,6 +1,6 @@
-const { defineConfig, devices } = require('@playwright/test');
+import { defineConfig, devices } from '@playwright/test';
 
-module.exports = defineConfig({
+export default defineConfig({
   testDir: '.',
   testMatch: 'app.test.js',
   fullyParallel: true,
@@ -9,7 +9,7 @@ module.exports = defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'list',
   timeout: 30000,
-  
+
   use: {
     baseURL: 'http://localhost:8000/index.html',
     trace: 'on-first-retry',
