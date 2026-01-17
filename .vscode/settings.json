@@ -1,0 +1,14 @@
+{
+    "spellright.language": [
+        "cs"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext",
+        "bat"
+    ],
+    "github-actions.workflows.pinned.workflows": [
+        ".github/workflows/blank.yml"
+    ]
+}

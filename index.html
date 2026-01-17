@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Generátor obsahu pro sociální sítě - vytvořte poutavý obsah pomocí AI pro Facebook, Instagram, Twitter/X, LinkedIn a TikTok.">
+    <title>Generátor obsahu pro sociální sítě</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Generátor obsahu pro sociální sítě</h1>
+            <p class="subtitle">Vytvořte poutavý obsah pomocí AI</p>
+        </header>
+
+        <main>
+            <!-- Strategic Communication Line Section -->
+            <section class="strategy-section">
+                <div class="strategy-header" id="strategyToggle">
+                    <h2>📋 Strategická komunikační linka</h2>
+                    <button type="button" class="toggle-btn" aria-expanded="false" aria-controls="strategyForm">
+                        <span class="toggle-text">Rozbalit</span>
+                        <span class="toggle-icon">▼</span>
+                    </button>
+                </div>
+                <p class="strategy-description">Definujte dlouhodobou komunikační strategii vaší značky pro konzistentní obsah</p>
+
+                <form id="strategyForm" class="strategy-form collapsed">
+                    <div class="form-group">
+                        <label for="brandName">
+                            <span class="label-text">Název značky / firmy</span>
+                        </label>
+                        <input type="text" id="brandName" name="brandName" placeholder="Např. 'TechStartup s.r.o.'">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brandMission">
+                            <span class="label-text">Mise a vize značky</span>
+                        </label>
+                        <textarea id="brandMission" name="brandMission" rows="3"
+                            placeholder="Např. 'Pomáháme malým firmám růst pomocí moderních technologií...'"></textarea>
+                        <small class="help-text">Proč vaše firma existuje a kam směřuje</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brandValues">
+                            <span class="label-text">Hodnoty značky</span>
+                        </label>
+                        <input type="text" id="brandValues" name="brandValues" placeholder="Např. 'inovace, spolehlivost, transparentnost, zákaznický přístup'">
+                        <small class="help-text">Klíčové hodnoty oddělené čárkami</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usp">
+                            <span class="label-text">Jedinečná prodejní nabídka (USP)</span>
+                        </label>
+                        <textarea id="usp" name="usp" rows="2"
+                            placeholder="Např. 'Jediní na trhu nabízíme 24/7 podporu v češtině s garantovanou dobou odezvy 15 minut'"></textarea>
+                        <small class="help-text">Co vás odlišuje od konkurence</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brandVoice">
+                            <span class="label-text">Hlas značky (Brand Voice)</span>
+                        </label>
+                        <select id="brandVoice" name="brandVoice">
+                            <option value="">Vyberte primární hlas...</option>
+                            <option value="expert">Expertní a autoritativní</option>
+                            <option value="friendly">Přátelský a přístupný</option>
+                            <option value="innovative">Inovativní a progresivní</option>
+                            <option value="trustworthy">Důvěryhodný a spolehlivý</option>
+                            <option value="playful">Hravý a zábavný</option>
+                            <option value="luxurious">Luxusní a exkluzivní</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="communicationPillars">
+                            <span class="label-text">Komunikační pilíře</span>
+                        </label>
+                        <textarea id="communicationPillars" name="communicationPillars" rows="3"
+                            placeholder="Např. '1. Edukace zákazníků&#10;2. Případové studie úspěšných klientů&#10;3. Novinky z oboru&#10;4. Firemní kultura a tým'"></textarea>
+                        <small class="help-text">Hlavní témata a oblasti vaší komunikace</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keyMessages">
+                            <span class="label-text">Klíčová sdělení</span>
+                        </label>
+                        <textarea id="keyMessages" name="keyMessages" rows="3"
+                            placeholder="Např. 'Růst bez kompromisů. Technologie, které pracují pro vás. Váš úspěch je náš úspěch.'"></textarea>
+                        <small class="help-text">Hlavní zprávy, které chcete opakovaně komunikovat</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="avoidTopics">
+                            <span class="label-text">Témata k vyhnutí</span>
+                        </label>
+                        <input type="text" id="avoidTopics" name="avoidTopics" placeholder="Např. 'politika, konkurence jménem, kontroverzní témata'">
+                        <small class="help-text">Témata, kterým se chcete vyhnout</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="saveStrategyBtn" class="btn btn-primary">
+                            <span class="btn-icon">💾</span>
+                            Uložit strategii
+                        </button>
+                        <button type="button" id="clearStrategyBtn" class="btn btn-secondary">
+                            Vymazat
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <hr class="section-divider">
+
+            <!-- Content Generation Form -->
+            <form id="contentForm" class="content-form">
+                <h2>✍️ Generování příspěvku</h2>
+
+                <div class="form-group">
+                    <label for="topic">
+                        <span class="label-text">Téma příspěvku</span>
+                        <span class="required">*</span>
+                    </label>
+                    <input type="text" id="topic" name="topic" placeholder="Např. 'Tipy pro produktivitu v práci'"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="platform">
+                        <span class="label-text">Platforma</span>
+                        <span class="required">*</span>
+                    </label>
+                    <select id="platform" name="platform" required>
+                        <option value="">Vyberte platformu...</option>
+                        <option value="facebook">Facebook</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="twitter">Twitter/X</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="tiktok">TikTok</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tone">
+                        <span class="label-text">Tón příspěvku</span>
+                        <span class="required">*</span>
+                    </label>
+                    <select id="tone" name="tone" required>
+                        <option value="">Vyberte tón...</option>
+                        <option value="professional">Profesionální</option>
+                        <option value="casual">Neformální</option>
+                        <option value="friendly">Přátelský</option>
+                        <option value="humorous">Humorný</option>
+                        <option value="inspirational">Inspirativní</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="length">
+                        <span class="label-text">Délka příspěvku</span>
+                        <span class="required">*</span>
+                    </label>
+                    <select id="length" name="length" required>
+                        <option value="">Vyberte délku...</option>
+                        <option value="short">Krátký (50-100 slov)</option>
+                        <option value="medium">Střední (100-200 slov)</option>
+                        <option value="long">Dlouhý (200-300 slov)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="stdcPhase">
+                        <span class="label-text">STDC fáze</span>
+                        <span class="required">*</span>
+                    </label>
+                    <select id="stdcPhase" name="stdcPhase" required>
+                        <option value="">Vyberte fázi...</option>
+                        <option value="see">See - Budování povědomí (široké publikum)</option>
+                        <option value="think">Think - Zvažování (publikum hledá řešení)</option>
+                        <option value="do">Do - Akce (publikum připravené k nákupu)</option>
+                        <option value="care">Care - Péče (stávající zákazníci)</option>
+                    </select>
+                    <small class="help-text">Vyberte fázi zákaznické cesty pro lepší zacílení obsahu</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetAudience">
+                        <span class="label-text">Cílová skupina</span>
+                    </label>
+                    <input type="text" id="targetAudience" name="targetAudience" placeholder="Např. 'mladí podnikatelé 25-35 let'">
+                    <small class="help-text">Popište vaši cílovou skupinu (věk, zájmy, profese)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="callToAction">
+                        <span class="label-text">Výzva k akci (CTA)</span>
+                    </label>
+                    <select id="callToAction" name="callToAction">
+                        <option value="">Žádná specifická CTA</option>
+                        <option value="learn_more">Zjistit více</option>
+                        <option value="sign_up">Registrace / Přihlášení</option>
+                        <option value="buy_now">Koupit nyní</option>
+                        <option value="contact">Kontaktovat nás</option>
+                        <option value="share">Sdílet příspěvek</option>
+                        <option value="comment">Zanechat komentář</option>
+                        <option value="visit_website">Navštívit web</option>
+                        <option value="download">Stáhnout</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="keywords">
+                        <span class="label-text">Klíčová slova (volitelné)</span>
+                    </label>
+                    <input type="text" id="keywords" name="keywords" placeholder="Např. 'marketing, strategie, růst'">
+                    <small class="help-text">Oddělte klíčová slova čárkami</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="additionalInfo">
+                        <span class="label-text">Další informace (volitelné)</span>
+                    </label>
+                    <textarea id="additionalInfo" name="additionalInfo" rows="4"
+                        placeholder="Přidejte jakékoli další pokyny nebo kontext..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="btn-icon">✨</span>
+                        Generovat obsah
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        Vymazat formulář
+                    </button>
+                </div>
+            </form>
+
+            <div id="result" class="result-container" style="display: none;" aria-live="polite">
+                <h2>Vygenerovaný obsah</h2>
+                <div class="result-content">
+                    <div id="generatedContent" class="generated-text" role="region" aria-label="Vygenerovaný text"></div>
+                    <div class="result-actions">
+                        <button id="copyBtn" class="btn btn-small">
+                            📋 Zkopírovat
+                        </button>
+                        <button id="newContentBtn" class="btn btn-small btn-secondary">
+                            ➕ Nový obsah
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Powered by ChatGPT | &copy; <span id="currentYear"></span> Social Media Content Generator</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
