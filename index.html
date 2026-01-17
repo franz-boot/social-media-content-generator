@@ -16,7 +16,110 @@
         </header>
 
         <main>
+            <!-- Strategic Communication Line Section -->
+            <section class="strategy-section">
+                <div class="strategy-header" id="strategyToggle">
+                    <h2>📋 Strategická komunikační linka</h2>
+                    <button type="button" class="toggle-btn" aria-expanded="false" aria-controls="strategyForm">
+                        <span class="toggle-text">Rozbalit</span>
+                        <span class="toggle-icon">▼</span>
+                    </button>
+                </div>
+                <p class="strategy-description">Definujte dlouhodobou komunikační strategii vaší značky pro konzistentní obsah</p>
+
+                <form id="strategyForm" class="strategy-form collapsed">
+                    <div class="form-group">
+                        <label for="brandName">
+                            <span class="label-text">Název značky / firmy</span>
+                        </label>
+                        <input type="text" id="brandName" name="brandName" placeholder="Např. 'TechStartup s.r.o.'">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brandMission">
+                            <span class="label-text">Mise a vize značky</span>
+                        </label>
+                        <textarea id="brandMission" name="brandMission" rows="3"
+                            placeholder="Např. 'Pomáháme malým firmám růst pomocí moderních technologií...'"></textarea>
+                        <small class="help-text">Proč vaše firma existuje a kam směřuje</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brandValues">
+                            <span class="label-text">Hodnoty značky</span>
+                        </label>
+                        <input type="text" id="brandValues" name="brandValues" placeholder="Např. 'inovace, spolehlivost, transparentnost, zákaznický přístup'">
+                        <small class="help-text">Klíčové hodnoty oddělené čárkami</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usp">
+                            <span class="label-text">Jedinečná prodejní nabídka (USP)</span>
+                        </label>
+                        <textarea id="usp" name="usp" rows="2"
+                            placeholder="Např. 'Jediní na trhu nabízíme 24/7 podporu v češtině s garantovanou dobou odezvy 15 minut'"></textarea>
+                        <small class="help-text">Co vás odlišuje od konkurence</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brandVoice">
+                            <span class="label-text">Hlas značky (Brand Voice)</span>
+                        </label>
+                        <select id="brandVoice" name="brandVoice">
+                            <option value="">Vyberte primární hlas...</option>
+                            <option value="expert">Expertní a autoritativní</option>
+                            <option value="friendly">Přátelský a přístupný</option>
+                            <option value="innovative">Inovativní a progresivní</option>
+                            <option value="trustworthy">Důvěryhodný a spolehlivý</option>
+                            <option value="playful">Hravý a zábavný</option>
+                            <option value="luxurious">Luxusní a exkluzivní</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="communicationPillars">
+                            <span class="label-text">Komunikační pilíře</span>
+                        </label>
+                        <textarea id="communicationPillars" name="communicationPillars" rows="3"
+                            placeholder="Např. '1. Edukace zákazníků&#10;2. Případové studie úspěšných klientů&#10;3. Novinky z oboru&#10;4. Firemní kultura a tým'"></textarea>
+                        <small class="help-text">Hlavní témata a oblasti vaší komunikace</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keyMessages">
+                            <span class="label-text">Klíčová sdělení</span>
+                        </label>
+                        <textarea id="keyMessages" name="keyMessages" rows="3"
+                            placeholder="Např. 'Růst bez kompromisů. Technologie, které pracují pro vás. Váš úspěch je náš úspěch.'"></textarea>
+                        <small class="help-text">Hlavní zprávy, které chcete opakovaně komunikovat</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="avoidTopics">
+                            <span class="label-text">Témata k vyhnutí</span>
+                        </label>
+                        <input type="text" id="avoidTopics" name="avoidTopics" placeholder="Např. 'politika, konkurence jménem, kontroverzní témata'">
+                        <small class="help-text">Témata, kterým se chcete vyhnout</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="saveStrategyBtn" class="btn btn-primary">
+                            <span class="btn-icon">💾</span>
+                            Uložit strategii
+                        </button>
+                        <button type="button" id="clearStrategyBtn" class="btn btn-secondary">
+                            Vymazat
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <hr class="section-divider">
+
+            <!-- Content Generation Form -->
             <form id="contentForm" class="content-form">
+                <h2>✍️ Generování příspěvku</h2>
+
                 <div class="form-group">
                     <label for="topic">
                         <span class="label-text">Téma příspěvku</span>

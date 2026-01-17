@@ -2,12 +2,100 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Set current year in footer
     document.getElementById('currentYear').textContent = new Date().getFullYear();
-    
+
     const form = document.getElementById('contentForm');
     const resultContainer = document.getElementById('result');
     const generatedContent = document.getElementById('generatedContent');
     const copyBtn = document.getElementById('copyBtn');
     const newContentBtn = document.getElementById('newContentBtn');
+
+    // Strategy form elements
+    const strategyForm = document.getElementById('strategyForm');
+    const strategyToggle = document.getElementById('strategyToggle');
+    const toggleBtn = strategyToggle.querySelector('.toggle-btn');
+    const toggleText = toggleBtn.querySelector('.toggle-text');
+    const saveStrategyBtn = document.getElementById('saveStrategyBtn');
+    const clearStrategyBtn = document.getElementById('clearStrategyBtn');
+
+    // Strategy form toggle functionality
+    toggleBtn.addEventListener('click', function() {
+        const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        toggleBtn.setAttribute('aria-expanded', !isExpanded);
+        strategyForm.classList.toggle('collapsed');
+        toggleText.textContent = isExpanded ? 'Rozbalit' : 'Sbalit';
+    });
+
+    // Load saved strategy from localStorage
+    function loadStrategy() {
+        const savedStrategy = localStorage.getItem('communicationStrategy');
+        if (savedStrategy) {
+            const strategy = JSON.parse(savedStrategy);
+            document.getElementById('brandName').value = strategy.brandName || '';
+            document.getElementById('brandMission').value = strategy.brandMission || '';
+            document.getElementById('brandValues').value = strategy.brandValues || '';
+            document.getElementById('usp').value = strategy.usp || '';
+            document.getElementById('brandVoice').value = strategy.brandVoice || '';
+            document.getElementById('communicationPillars').value = strategy.communicationPillars || '';
+            document.getElementById('keyMessages').value = strategy.keyMessages || '';
+            document.getElementById('avoidTopics').value = strategy.avoidTopics || '';
+
+            // Show saved indicator
+            updateStrategySavedIndicator(true);
+        }
+    }
+
+    // Save strategy to localStorage
+    function saveStrategy() {
+        const strategy = {
+            brandName: document.getElementById('brandName').value.trim(),
+            brandMission: document.getElementById('brandMission').value.trim(),
+            brandValues: document.getElementById('brandValues').value.trim(),
+            usp: document.getElementById('usp').value.trim(),
+            brandVoice: document.getElementById('brandVoice').value,
+            communicationPillars: document.getElementById('communicationPillars').value.trim(),
+            keyMessages: document.getElementById('keyMessages').value.trim(),
+            avoidTopics: document.getElementById('avoidTopics').value.trim()
+        };
+
+        localStorage.setItem('communicationStrategy', JSON.stringify(strategy));
+        updateStrategySavedIndicator(true);
+        showSuccessMessage('Strategie byla uložena!');
+    }
+
+    // Get current strategy data
+    function getStrategyData() {
+        const savedStrategy = localStorage.getItem('communicationStrategy');
+        return savedStrategy ? JSON.parse(savedStrategy) : null;
+    }
+
+    // Update saved indicator in header
+    function updateStrategySavedIndicator(saved) {
+        const existingIndicator = strategyToggle.querySelector('.strategy-saved');
+        if (saved && !existingIndicator) {
+            const indicator = document.createElement('span');
+            indicator.className = 'strategy-saved';
+            indicator.innerHTML = '✓ Uloženo';
+            strategyToggle.querySelector('h2').appendChild(indicator);
+        } else if (!saved && existingIndicator) {
+            existingIndicator.remove();
+        }
+    }
+
+    // Save strategy button handler
+    saveStrategyBtn.addEventListener('click', saveStrategy);
+
+    // Clear strategy button handler
+    clearStrategyBtn.addEventListener('click', function() {
+        if (confirm('Opravdu chcete vymazat uloženou strategii?')) {
+            localStorage.removeItem('communicationStrategy');
+            strategyForm.reset();
+            updateStrategySavedIndicator(false);
+            showSuccessMessage('Strategie byla vymazána.');
+        }
+    });
+
+    // Load strategy on page load
+    loadStrategy();
 
     // Form submission handler
     form.addEventListener('submit', function(e) {
@@ -132,15 +220,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return new Promise((resolve) => {
             // Simulate API delay
             setTimeout(() => {
+                // Get strategy data and merge with content data
+                const strategy = getStrategyData();
                 // This is a mock response. In production, this would call the ChatGPT API
-                const mockContent = generateMockContent(data);
+                const mockContent = generateMockContent(data, strategy);
                 resolve(mockContent);
             }, 2000);
         });
     }
 
     // Generate mock content based on form data
-    function generateMockContent(data) {
+    function generateMockContent(data, strategy) {
         const platformEmojis = {
             facebook: '👥',
             instagram: '📸',
@@ -175,14 +265,35 @@ document.addEventListener('DOMContentLoaded', function() {
             download: 'Stáhněte si zdarma!'
         };
 
+        const brandVoiceLabels = {
+            expert: 'expertním a autoritativním',
+            friendly: 'přátelským a přístupným',
+            innovative: 'inovativním a progresivním',
+            trustworthy: 'důvěryhodným a spolehlivým',
+            playful: 'hravým a zábavným',
+            luxurious: 'luxusním a exkluzivním'
+        };
+
         const emoji = platformEmojis[data.platform] || '✨';
         const toneStyle = toneStyles[data.tone] || 'přátelském';
         const stdcInfo = stdcDescriptions[data.stdcPhase] || stdcDescriptions.see;
 
         let content = `${emoji} ${data.topic}\n\n`;
 
+        // Add brand name if available
+        if (strategy && strategy.brandName) {
+            content += `🏢 Značka: ${strategy.brandName}\n`;
+        }
+
         content += `Toto je ukázkový obsah vygenerovaný v ${toneStyle} tónu pro platformu ${data.platform}.\n`;
-        content += `📊 STDC fáze: ${stdcInfo.name} (${stdcInfo.description}) - cíl: ${stdcInfo.goal}\n\n`;
+        content += `📊 STDC fáze: ${stdcInfo.name} (${stdcInfo.description}) - cíl: ${stdcInfo.goal}\n`;
+
+        // Add brand voice if available
+        if (strategy && strategy.brandVoice && brandVoiceLabels[strategy.brandVoice]) {
+            content += `🎤 Hlas značky: ${brandVoiceLabels[strategy.brandVoice]}\n`;
+        }
+
+        content += `\n`;
 
         if (data.targetAudience) {
             content += `🎯 Cílová skupina: ${data.targetAudience}\n\n`;
@@ -202,6 +313,21 @@ document.addEventListener('DOMContentLoaded', function() {
             content += `Ujistěte se, že je váš text dobře strukturovaný a snadno čitelný! 📚\n\n`;
         }
 
+        // Add strategy-based content
+        if (strategy) {
+            if (strategy.keyMessages) {
+                content += `💬 Klíčové sdělení: ${strategy.keyMessages.split('\n')[0]}\n\n`;
+            }
+
+            if (strategy.usp) {
+                content += `⭐ USP: ${strategy.usp}\n\n`;
+            }
+
+            if (strategy.brandValues) {
+                content += `💎 Hodnoty: ${strategy.brandValues}\n\n`;
+            }
+        }
+
         if (data.keywords) {
             content += `🔑 Klíčová slova: ${data.keywords}\n\n`;
         }
@@ -212,6 +338,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (data.additionalInfo) {
             content += `📝 Další kontext: ${data.additionalInfo}\n\n`;
+        }
+
+        // Show avoid topics warning if relevant
+        if (strategy && strategy.avoidTopics) {
+            content += `⚠️ Vyhnout se: ${strategy.avoidTopics}\n\n`;
         }
 
         content += `---\n`;
