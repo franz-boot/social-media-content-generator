@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission handler
     form.addEventListener('submit', function(e) {
         e.preventDefault();
-
+        
         // Get form data
         const formData = {
             topic: document.getElementById('topic').value.trim(),
@@ -141,13 +141,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form reset handler
     form.addEventListener('reset', function() {
-        resultContainer.classList.add('result-hidden');
+        resultContainer.style.display = 'none';
     });
 
     // Copy button handler
     copyBtn.addEventListener('click', function() {
         const text = generatedContent.textContent;
-
+        
         // Try modern clipboard API first
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text)
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fallbackCopyText(text);
         }
     });
-
+    
     // Fallback copy method
     function fallbackCopyText(text) {
         const textArea = document.createElement('textarea');
@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         textArea.style.left = '-999999px';
         document.body.appendChild(textArea);
         textArea.select();
-
+        
         try {
             document.execCommand('copy');
             showSuccessMessage('Obsah byl zkopírován do schránky!');
@@ -180,13 +180,13 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Fallback copy failed:', err);
             alert('Nepodařilo se zkopírovat text automaticky. Použijte Ctrl+C pro kopírování.');
         }
-
+        
         document.body.removeChild(textArea);
     }
 
     // New content button handler
     newContentBtn.addEventListener('click', function() {
-        resultContainer.classList.add('result-hidden');
+        resultContainer.style.display = 'none';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Display the generated content
     function displayResult(content) {
         generatedContent.textContent = content;
-        resultContainer.classList.remove('result-hidden');
+        resultContainer.style.display = 'block';
         resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
@@ -363,9 +363,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const successDiv = document.createElement('div');
         successDiv.className = 'success-message';
         successDiv.textContent = '✅ ' + message;
-
+        
         resultContainer.insertBefore(successDiv, resultContainer.firstChild);
-
+        
         setTimeout(() => {
             successDiv.remove();
         }, 3000);
@@ -373,14 +373,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Real-time character counter for textarea (optional enhancement)
     // This is a placeholder for future functionality
-
+    
     // Form field animation on focus - using CSS classes
     const inputs = form.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
         input.addEventListener('focus', function() {
             this.parentElement.classList.add('form-group-focused');
         });
-
+        
         input.addEventListener('blur', function() {
             this.parentElement.classList.remove('form-group-focused');
         });

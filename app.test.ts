@@ -40,20 +40,19 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
 
   test('content generation works end-to-end', async ({ page }) => {
     await page.goto('/');
-
+    
     // Fill in the form
     await page.getByRole('textbox', { name: /Téma příspěvku/ }).fill('Test topic');
     await page.getByLabel(/Platforma/).selectOption('facebook');
     await page.getByLabel(/Tón příspěvku/).selectOption('friendly');
     await page.getByLabel(/Délka příspěvku/).selectOption('short');
-    await page.getByLabel(/STDC fáze/).selectOption('see');
-
+    
     // Submit form
     await page.getByRole('button', { name: /Generovat obsah/ }).click();
-
+    
     // Wait for content to be generated (with timeout for mock delay)
     await page.waitForSelector('#result', { state: 'visible', timeout: 5000 });
-
+    
     // Check that generated content is visible
     const generatedContent = page.locator('#generatedContent');
     await expect(generatedContent).toBeVisible();
@@ -63,23 +62,22 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
   test('copy button works', async ({ page }) => {
     // Grant clipboard permissions
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-
+    
     await page.goto('/');
-
+    
     // Fill and submit form
     await page.getByRole('textbox', { name: /Téma příspěvku/ }).fill('Copy test');
     await page.getByLabel(/Platforma/).selectOption('instagram');
     await page.getByLabel(/Tón příspěvku/).selectOption('professional');
     await page.getByLabel(/Délka příspěvku/).selectOption('medium');
-    await page.getByLabel(/STDC fáze/).selectOption('think');
     await page.getByRole('button', { name: /Generovat obsah/ }).click();
-
+    
     // Wait for content
     await page.waitForSelector('#result', { state: 'visible', timeout: 5000 });
-
+    
     // Click copy button
     await page.getByRole('button', { name: /Zkopírovat/ }).click();
-
+    
     // Check for success message
     await expect(page.locator('.success-message')).toBeVisible();
     await expect(page.locator('.success-message')).toContainText(/zkopírován/);
