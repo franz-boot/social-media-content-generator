@@ -63,22 +63,23 @@ test.describe('Social Media Content Generator - Application Launch Test', () => 
   test('copy button works', async ({ page }) => {
     // Grant clipboard permissions
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-    
+
     await page.goto('/');
-    
+
     // Fill and submit form
     await page.getByRole('textbox', { name: /Téma příspěvku/ }).fill('Copy test');
     await page.getByLabel(/Platforma/).selectOption('instagram');
     await page.getByLabel(/Tón příspěvku/).selectOption('professional');
     await page.getByLabel(/Délka příspěvku/).selectOption('medium');
+    await page.getByLabel(/STDC fáze/).selectOption('think');
     await page.getByRole('button', { name: /Generovat obsah/ }).click();
-    
+
     // Wait for content
     await page.waitForSelector('#result', { state: 'visible', timeout: 5000 });
-    
+
     // Click copy button
     await page.getByRole('button', { name: /Zkopírovat/ }).click();
-    
+
     // Check for success message
     await expect(page.locator('.success-message')).toBeVisible();
     await expect(page.locator('.success-message')).toContainText(/zkopírován/);

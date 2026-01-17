@@ -208,6 +208,10 @@ select {
     border-top: 2px solid var(--border-color);
 }
 
+.result-container.result-hidden {
+    display: none;
+}
+
 .result-container h2 {
     font-size: 1.5rem;
     margin-bottom: 20px;

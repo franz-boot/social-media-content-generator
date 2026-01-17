@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Form reset handler
     form.addEventListener('reset', function() {
-        resultContainer.style.display = 'none';
+        resultContainer.classList.add('result-hidden');
     });
 
     // Copy button handler
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // New content button handler
     newContentBtn.addEventListener('click', function() {
-        resultContainer.style.display = 'none';
+        resultContainer.classList.add('result-hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Display the generated content
     function displayResult(content) {
         generatedContent.textContent = content;
-        resultContainer.style.display = 'block';
+        resultContainer.classList.remove('result-hidden');
         resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
