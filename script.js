@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form reset handler
     form.addEventListener('reset', function() {
         resultContainer.classList.add('result-hidden');
+        resultContainer.style.display = 'none';
     });
 
     // Copy button handler
@@ -187,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // New content button handler
     newContentBtn.addEventListener('click', function() {
         resultContainer.classList.add('result-hidden');
+        resultContainer.style.display = 'none';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
@@ -355,6 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayResult(content) {
         generatedContent.textContent = content;
         resultContainer.classList.remove('result-hidden');
+        resultContainer.style.display = 'block';
         resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
