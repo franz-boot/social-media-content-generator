@@ -32,8 +32,10 @@ function validateFilePath(userPath) {
     const baseDir = path.resolve(__dirname);
     const resolvedPath = path.resolve(baseDir, userPath);
     
-    // Ensure the resolved path is within the base directory
-    if (!resolvedPath.startsWith(baseDir + path.sep) && resolvedPath !== baseDir) {
+    // Use path.relative to check if the path escapes the base directory
+    // If the relative path starts with '..' it means it's outside the base directory
+    const relativePath = path.relative(baseDir, resolvedPath);
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
         throw new Error('Invalid file path: access denied');
     }
     
@@ -189,7 +191,7 @@ function runVerification() {
     log('\n\nAdditional Checks:', 'yellow');
     
     // Check if script.js is referenced in index.html
-    const indexPath = validateFilePath(path.join(__dirname, 'index.html'));
+    const indexPath = validateFilePath('index.html');
     const indexContent = fs.readFileSync(indexPath, 'utf8');
     if (indexContent.includes('script.js')) {
         log('  ✓ script.js is referenced in index.html', 'green');
@@ -225,6 +227,18 @@ function runVerification() {
     }
 }
 
-// Run verification
-const exitCode = runVerification();
-process.exit(exitCode);
+// Run verification if called directly, otherwise export for testing
+if (require.main === module) {
+    const exitCode = runVerification();
+    process.exit(exitCode);
+} else {
+    // Export for testing
+    module.exports = {
+        validateFilePath,
+        checkFileExists,
+        checkFileNotEmpty,
+        validateHTML,
+        validateJS,
+        validateCSS
+    };
+}

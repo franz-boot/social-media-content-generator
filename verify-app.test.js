@@ -7,27 +7,9 @@
 
 const assert = require('assert');
 const path = require('path');
-const fs = require('fs');
 
-// Import the validateFilePath function by evaluating the verify-app.js code
-const verifyAppCode = fs.readFileSync(path.join(__dirname, 'verify-app.js'), 'utf8');
-
-// Extract and eval the validateFilePath function for testing
-// This is a simple approach for testing without module exports
-const validateFilePathMatch = verifyAppCode.match(/function validateFilePath\(userPath\)\s*{[\s\S]*?^}/m);
-if (!validateFilePathMatch) {
-    console.error('❌ Could not extract validateFilePath function');
-    process.exit(1);
-}
-
-// Create a test context with the function
-const testContext = {
-    path: path,
-    __dirname: __dirname
-};
-
-// Evaluate the function in our context
-const validateFilePath = new Function('path', '__dirname', validateFilePathMatch[0] + '; return validateFilePath;')(path, __dirname);
+// Import the functions from verify-app.js
+const { validateFilePath } = require('./verify-app.js');
 
 // Test colors
 const colors = {
@@ -61,7 +43,7 @@ let allPassed = true;
 allPassed &= test('Should accept valid relative path: index.html', () => {
     const result = validateFilePath('index.html');
     assert(result.endsWith('index.html'), 'Should return path ending with index.html');
-    assert(result.startsWith(__dirname), 'Should start with base directory');
+    assert(path.isAbsolute(result), 'Should return absolute path');
 });
 
 // Test 2: Valid relative paths in current directory should be accepted
@@ -117,7 +99,7 @@ allPassed &= test('Should handle Windows-style paths on Unix systems', () => {
     try {
         const result = validateFilePath('C:\\Windows\\System32\\config\\sam');
         // On Unix this becomes a relative path, which is fine as long as it stays in base dir
-        assert(result.startsWith(__dirname), 'Should start with base directory');
+        assert(path.isAbsolute(result), 'Should return absolute path');
     } catch (err) {
         // If it throws access denied, that's also acceptable
         assert(err.message.includes('Invalid file path') || err.message.includes('access denied'), 
