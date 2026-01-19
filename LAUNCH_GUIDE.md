@@ -9,6 +9,7 @@ Tato aplikace je validována a připravena ke spuštění. Všechny potřebné s
 Pro automatické ověření, že aplikace je připravena ke spuštění, spusťte:
 
 ```bash
+# Vyžaduje nainstalovaný Node.js (viz sekce "Build and Test Commands" v README.md)
 node verify-app.js
 ```
 
