@@ -21,31 +21,9 @@ function log(message, color = 'reset') {
     console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-/**
- * Validates that a file path is within the allowed base directory
- * Prevents path traversal attacks by rejecting paths with .. or absolute paths
- * @param {string} userPath - The user-provided file path to validate
- * @returns {string} The validated and resolved absolute path
- * @throws {Error} If the path is invalid or tries to escape the base directory
- */
-function validateFilePath(userPath) {
-    const baseDir = path.resolve(__dirname);
-    const resolvedPath = path.resolve(baseDir, userPath);
-    
-    // Use path.relative to check if the path escapes the base directory
-    // If the relative path starts with '..' it means it's outside the base directory
-    const relativePath = path.relative(baseDir, resolvedPath);
-    if (relativePath.startsWith('..')) {
-        throw new Error('Invalid file path: access denied');
-    }
-    
-    return resolvedPath;
-}
-
 function checkFileExists(filePath) {
     try {
-        const validatedPath = validateFilePath(filePath);
-        fs.accessSync(validatedPath, fs.constants.R_OK);
+        fs.accessSync(filePath, fs.constants.R_OK);
         return true;
     } catch (err) {
         return false;
@@ -54,8 +32,7 @@ function checkFileExists(filePath) {
 
 function checkFileNotEmpty(filePath) {
     try {
-        const validatedPath = validateFilePath(filePath);
-        const stats = fs.statSync(validatedPath);
+        const stats = fs.statSync(filePath);
         return stats.size > 0;
     } catch (err) {
         return false;
@@ -64,8 +41,7 @@ function checkFileNotEmpty(filePath) {
 
 function validateHTML(filePath) {
     try {
-        const validatedPath = validateFilePath(filePath);
-        const content = fs.readFileSync(validatedPath, 'utf8');
+        const content = fs.readFileSync(filePath, 'utf8');
         
         // Basic HTML validation checks
         const hasDoctype = /<!DOCTYPE html>/i.test(content);
@@ -91,8 +67,7 @@ function validateHTML(filePath) {
 
 function validateJS(filePath) {
     try {
-        const validatedPath = validateFilePath(filePath);
-        const content = fs.readFileSync(validatedPath, 'utf8');
+        const content = fs.readFileSync(filePath, 'utf8');
         
         // Check for key functions
         const hasEventListener = /addEventListener/i.test(content);
@@ -112,8 +87,7 @@ function validateJS(filePath) {
 
 function validateCSS(filePath) {
     try {
-        const validatedPath = validateFilePath(filePath);
-        const content = fs.readFileSync(validatedPath, 'utf8');
+        const content = fs.readFileSync(filePath, 'utf8');
         
         // Basic CSS validation
         const hasCSSRules = /[^}]*\{[^}]*\}/.test(content);
@@ -191,8 +165,7 @@ function runVerification() {
     log('\n\nAdditional Checks:', 'yellow');
     
     // Check if script.js is referenced in index.html
-    const indexPath = validateFilePath('index.html');
-    const indexContent = fs.readFileSync(indexPath, 'utf8');
+    const indexContent = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
     if (indexContent.includes('script.js')) {
         log('  ✓ script.js is referenced in index.html', 'green');
     } else {
@@ -227,18 +200,6 @@ function runVerification() {
     }
 }
 
-// Run verification if called directly, otherwise export for testing
-if (require.main === module) {
-    const exitCode = runVerification();
-    process.exit(exitCode);
-} else {
-    // Export for testing
-    module.exports = {
-        validateFilePath,
-        checkFileExists,
-        checkFileNotEmpty,
-        validateHTML,
-        validateJS,
-        validateCSS
-    };
-}
+// Run verification
+const exitCode = runVerification();
+process.exit(exitCode);
