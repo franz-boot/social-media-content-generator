@@ -35,7 +35,7 @@ function validateFilePath(userPath) {
     // Use path.relative to check if the path escapes the base directory
     // If the relative path starts with '..' it means it's outside the base directory
     const relativePath = path.relative(baseDir, resolvedPath);
-    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+    if (relativePath.startsWith('..')) {
         throw new Error('Invalid file path: access denied');
     }
     
