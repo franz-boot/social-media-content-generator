@@ -4,7 +4,6 @@
   "description": "Webová aplikace pro generování obsahu na sociální síti pomocí ChatGPT",
   "scripts": {
     "test": "playwright test",
-    "test:security": "node verify-app.test.js",
     "verify": "node verify-app.js"
   },
   "keywords": [

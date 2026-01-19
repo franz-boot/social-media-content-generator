@@ -23,7 +23,7 @@ function log(message, color = 'reset') {
 
 /**
  * Validates that a file path is within the allowed base directory
- * Prevents path traversal attacks by ensuring the resolved path stays within the base directory
+ * Prevents path traversal attacks by rejecting paths with .. or absolute paths
  * @param {string} userPath - The user-provided file path to validate
  * @returns {string} The validated and resolved absolute path
  * @throws {Error} If the path is invalid or tries to escape the base directory
@@ -85,10 +85,6 @@ function validateHTML(filePath) {
             }
         };
     } catch (err) {
-        // Don't reveal validation error details to prevent information disclosure
-        if (err.message && err.message.includes('Invalid file path')) {
-            return { valid: false, error: 'File validation failed' };
-        }
         return { valid: false, error: err.message };
     }
 }
@@ -110,10 +106,6 @@ function validateJS(filePath) {
             }
         };
     } catch (err) {
-        // Don't reveal validation error details to prevent information disclosure
-        if (err.message && err.message.includes('Invalid file path')) {
-            return { valid: false, error: 'File validation failed' };
-        }
         return { valid: false, error: err.message };
     }
 }
@@ -135,10 +127,6 @@ function validateCSS(filePath) {
             }
         };
     } catch (err) {
-        // Don't reveal validation error details to prevent information disclosure
-        if (err.message && err.message.includes('Invalid file path')) {
-            return { valid: false, error: 'File validation failed' };
-        }
         return { valid: false, error: err.message };
     }
 }
