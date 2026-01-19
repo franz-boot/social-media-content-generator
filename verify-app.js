@@ -42,8 +42,7 @@ function log(message, color = 'reset') {
 
 function checkFileExists(filePath) {
     try {
-        const safePath = validatePath(filePath);
-        fs.accessSync(safePath, fs.constants.R_OK);
+        fs.accessSync(filePath, fs.constants.R_OK);
         return true;
     } catch (err) {
         return false;
