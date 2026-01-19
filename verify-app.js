@@ -8,6 +8,25 @@
 const fs = require('fs');
 const path = require('path');
 
+// Safe base directory for all file operations
+const BASE_DIR = path.resolve(__dirname);
+
+/**
+ * Validates that a file path is within the allowed base directory
+ * @param {string} filePath - The path to validate
+ * @returns {string} - The resolved safe path
+ * @throws {Error} - If the path is outside the base directory
+ */
+function validatePath(filePath) {
+    const resolvedPath = path.resolve(filePath);
+
+    if (!resolvedPath.startsWith(BASE_DIR + path.sep) && resolvedPath !== BASE_DIR) {
+        throw new Error(`Path traversal detected: access denied outside base directory`);
+    }
+
+    return resolvedPath;
+}
+
 // ANSI color codes for output
 const colors = {
     reset: '\x1b[0m',
@@ -23,7 +42,8 @@ function log(message, color = 'reset') {
 
 function checkFileExists(filePath) {
     try {
-        fs.accessSync(filePath, fs.constants.R_OK);
+        const safePath = validatePath(filePath);
+        fs.accessSync(safePath, fs.constants.R_OK);
         return true;
     } catch (err) {
         return false;
@@ -32,7 +52,8 @@ function checkFileExists(filePath) {
 
 function checkFileNotEmpty(filePath) {
     try {
-        const stats = fs.statSync(filePath);
+        const safePath = validatePath(filePath);
+        const stats = fs.statSync(safePath);
         return stats.size > 0;
     } catch (err) {
         return false;
@@ -41,7 +62,8 @@ function checkFileNotEmpty(filePath) {
 
 function validateHTML(filePath) {
     try {
-        const content = fs.readFileSync(filePath, 'utf8');
+        const safePath = validatePath(filePath);
+        const content = fs.readFileSync(safePath, 'utf8');
         
         // Basic HTML validation checks
         const hasDoctype = /<!DOCTYPE html>/i.test(content);
@@ -67,7 +89,8 @@ function validateHTML(filePath) {
 
 function validateJS(filePath) {
     try {
-        const content = fs.readFileSync(filePath, 'utf8');
+        const safePath = validatePath(filePath);
+        const content = fs.readFileSync(safePath, 'utf8');
         
         // Check for key functions
         const hasEventListener = /addEventListener/i.test(content);
@@ -87,7 +110,8 @@ function validateJS(filePath) {
 
 function validateCSS(filePath) {
     try {
-        const content = fs.readFileSync(filePath, 'utf8');
+        const safePath = validatePath(filePath);
+        const content = fs.readFileSync(safePath, 'utf8');
         
         // Basic CSS validation
         const hasCSSRules = /[^}]*\{[^}]*\}/.test(content);
