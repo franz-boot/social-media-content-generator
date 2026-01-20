@@ -17,6 +17,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const saveStrategyBtn = document.getElementById('saveStrategyBtn');
     const clearStrategyBtn = document.getElementById('clearStrategyBtn');
 
+    // New elements
+    const variationBtn = document.getElementById('generate-variation');
+    const exportTxtBtn = document.getElementById('export-txt');
+    const exportMdBtn = document.getElementById('export-md');
+    const exportHtmlBtn = document.getElementById('export-html');
+    const clearHistoryBtn = document.getElementById('clear-history');
+    const historyList = document.getElementById('history-list');
+
+    // Stats elements
+    const charCountEl = document.getElementById('char-count');
+    const wordCountEl = document.getElementById('word-count');
+    const readTimeEl = document.getElementById('read-time');
+    const twitterWarningEl = document.getElementById('twitter-warning');
+
+    // Store last used form parameters for variation
+    let lastFormParams = null;
+    let currentPlatform = '';
+
     // Strategy form toggle functionality
     toggleBtn.addEventListener('click', function() {
         const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
@@ -24,6 +42,283 @@ document.addEventListener('DOMContentLoaded', function() {
         strategyForm.classList.toggle('collapsed');
         toggleText.textContent = isExpanded ? 'Rozbalit' : 'Sbalit';
     });
+
+    // ========================================
+    // HISTORY FUNCTIONS
+    // ========================================
+
+    function loadHistory() {
+        const history = JSON.parse(localStorage.getItem('contentHistory') || '[]');
+        return history;
+    }
+
+    function saveToHistory(platform, topic, content) {
+        const history = loadHistory();
+        const newEntry = {
+            id: Date.now(),
+            timestamp: new Date().toISOString(),
+            platform: platform,
+            topic: topic,
+            content: content
+        };
+
+        // Add to beginning, keep only last 10
+        history.unshift(newEntry);
+        if (history.length > 10) {
+            history.pop();
+        }
+
+        localStorage.setItem('contentHistory', JSON.stringify(history));
+        renderHistory();
+    }
+
+    function clearHistory() {
+        if (confirm('Opravdu chcete vymazat celou historii generování?')) {
+            localStorage.removeItem('contentHistory');
+            renderHistory();
+            showSuccessMessage('Historie byla vymazána.');
+        }
+    }
+
+    function deleteHistoryItem(id) {
+        let history = loadHistory();
+        history = history.filter(item => item.id !== id);
+        localStorage.setItem('contentHistory', JSON.stringify(history));
+        renderHistory();
+        showSuccessMessage('Položka byla odstraněna z historie.');
+    }
+
+    function loadHistoryItem(id) {
+        const history = loadHistory();
+        const item = history.find(h => h.id === id);
+        if (item) {
+            generatedContent.textContent = item.content;
+            currentPlatform = item.platform;
+            resultContainer.classList.remove('result-hidden');
+            updateContentStats();
+            resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function formatDate(isoString) {
+        const date = new Date(isoString);
+        return date.toLocaleDateString('cs-CZ', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    function truncateText(text, maxLength = 50) {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    }
+
+    function getPlatformLabel(platform) {
+        const labels = {
+            facebook: 'Facebook',
+            instagram: 'Instagram',
+            twitter: 'Twitter/X',
+            linkedin: 'LinkedIn',
+            tiktok: 'TikTok',
+            'blogovy-clanek': 'Blog',
+            'newsletter': 'Newsletter',
+            'emailing': 'Email'
+        };
+        return labels[platform] || platform;
+    }
+
+    function renderHistory() {
+        const history = loadHistory();
+
+        if (history.length === 0) {
+            historyList.innerHTML = '<p class="history-empty">Zatím žádná historie generování.</p>';
+            return;
+        }
+
+        historyList.innerHTML = history.map(item => `
+            <div class="history-item" data-id="${item.id}">
+                <div class="history-item-header">
+                    <span class="history-platform platform-${item.platform}">${getPlatformLabel(item.platform)}</span>
+                    <span class="history-date">${formatDate(item.timestamp)}</span>
+                </div>
+                <div class="history-item-topic">${truncateText(item.topic, 40)}</div>
+                <div class="history-item-preview">${truncateText(item.content, 80)}</div>
+                <div class="history-item-actions">
+                    <button type="button" class="btn btn-tiny history-load" data-id="${item.id}">📄 Načíst</button>
+                    <button type="button" class="btn btn-tiny btn-danger history-delete" data-id="${item.id}">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+
+        // Add event listeners
+        historyList.querySelectorAll('.history-load').forEach(btn => {
+            btn.addEventListener('click', () => loadHistoryItem(parseInt(btn.dataset.id)));
+        });
+        historyList.querySelectorAll('.history-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteHistoryItem(parseInt(btn.dataset.id));
+            });
+        });
+    }
+
+    // ========================================
+    // EXPORT FUNCTIONS
+    // ========================================
+
+    function downloadFile(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function exportAsTxt() {
+        const content = generatedContent.textContent;
+        if (!content) return;
+
+        const filename = `obsah-${currentPlatform}-${Date.now()}.txt`;
+        downloadFile(content, filename, 'text/plain;charset=utf-8');
+        showSuccessMessage('Soubor TXT byl stažen.');
+    }
+
+    function exportAsMd() {
+        const content = generatedContent.textContent;
+        if (!content) return;
+
+        const date = new Date().toLocaleDateString('cs-CZ');
+        const mdContent = `---
+platforma: ${getPlatformLabel(currentPlatform)}
+datum: ${date}
+---
+
+# Vygenerovaný obsah
+
+${content}
+`;
+        const filename = `obsah-${currentPlatform}-${Date.now()}.md`;
+        downloadFile(mdContent, filename, 'text/markdown;charset=utf-8');
+        showSuccessMessage('Soubor MD byl stažen.');
+    }
+
+    function exportAsHtml() {
+        const content = generatedContent.textContent;
+        if (!content) return;
+
+        const date = new Date().toLocaleDateString('cs-CZ');
+        const htmlContent = `<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vygenerovaný obsah - ${getPlatformLabel(currentPlatform)}</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #0f172a;
+            color: #f1f5f9;
+            line-height: 1.8;
+        }
+        .meta {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+        }
+        .content {
+            white-space: pre-wrap;
+            background: #1e293b;
+            padding: 24px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="meta">
+        <strong>Platforma:</strong> ${getPlatformLabel(currentPlatform)} |
+        <strong>Datum:</strong> ${date}
+    </div>
+    <div class="content">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+</body>
+</html>`;
+        const filename = `obsah-${currentPlatform}-${Date.now()}.html`;
+        downloadFile(htmlContent, filename, 'text/html;charset=utf-8');
+        showSuccessMessage('Soubor HTML byl stažen.');
+    }
+
+    // ========================================
+    // CONTENT STATS FUNCTIONS
+    // ========================================
+
+    function updateContentStats() {
+        const content = generatedContent.textContent || '';
+
+        // Character count
+        const charCount = content.length;
+        const charCountNoSpaces = content.replace(/\s/g, '').length;
+        charCountEl.textContent = `${charCount} znaků (${charCountNoSpaces} bez mezer)`;
+
+        // Word count
+        const words = content.trim().split(/\s+/).filter(w => w.length > 0);
+        const wordCount = content.trim() ? words.length : 0;
+        wordCountEl.textContent = `${wordCount} slov`;
+
+        // Read time (200 words per minute)
+        const readTime = Math.max(1, Math.ceil(wordCount / 200));
+        readTimeEl.textContent = `${readTime} min čtení`;
+
+        // Twitter warning
+        if (currentPlatform === 'twitter' && charCount > 280) {
+            twitterWarningEl.classList.remove('hidden');
+        } else {
+            twitterWarningEl.classList.add('hidden');
+        }
+    }
+
+    // ========================================
+    // VARIATION FUNCTION
+    // ========================================
+
+    async function generateVariation() {
+        if (!lastFormParams) return;
+
+        variationBtn.disabled = true;
+        variationBtn.textContent = '🔄 Generuji...';
+
+        try {
+            // Add variation instruction to the params
+            const variationParams = {
+                ...lastFormParams,
+                additionalInfo: (lastFormParams.additionalInfo || '') +
+                    '\n\nVYTVOŘ ODLIŠNOU VARIACI - nepoužívej stejné fráze ani strukturu jako předtím.'
+            };
+
+            const content = await generateContent(variationParams);
+            displayResult(content, lastFormParams.platform, lastFormParams.topic);
+        } catch (error) {
+            console.error('Error generating variation:', error);
+            showErrorMessage('Chyba při generování variace.');
+        } finally {
+            variationBtn.disabled = false;
+            variationBtn.textContent = '🔄 Nová variace';
+        }
+    }
+
+    // ========================================
+    // STRATEGY FUNCTIONS
+    // ========================================
 
     // Load saved strategy from localStorage
     function loadStrategy() {
@@ -97,6 +392,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load strategy on page load
     loadStrategy();
 
+    // ========================================
+    // FORM SUBMISSION
+    // ========================================
+
     // Form submission handler
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -119,17 +418,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Store for variation
+        lastFormParams = { ...formData };
+
         // Show loading state
         const submitBtn = form.querySelector('button[type="submit"]');
         submitBtn.classList.add('loading');
         submitBtn.disabled = true;
 
-        // Simulate API call (replace with actual API call to ChatGPT)
+        // Generate content
         generateContent(formData)
             .then(content => {
-                displayResult(content);
+                displayResult(content, formData.platform, formData.topic);
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
+                // Enable variation button after first generation
+                variationBtn.disabled = false;
             })
             .catch(error => {
                 console.error('Error generating content:', error);
@@ -142,7 +446,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form reset handler
     form.addEventListener('reset', function() {
         resultContainer.classList.add('result-hidden');
+        variationBtn.disabled = true;
+        lastFormParams = null;
     });
+
+    // ========================================
+    // EVENT LISTENERS
+    // ========================================
 
     // Copy button handler
     copyBtn.addEventListener('click', function() {
@@ -190,6 +500,21 @@ document.addEventListener('DOMContentLoaded', function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
+    // Export button handlers
+    exportTxtBtn.addEventListener('click', exportAsTxt);
+    exportMdBtn.addEventListener('click', exportAsMd);
+    exportHtmlBtn.addEventListener('click', exportAsHtml);
+
+    // Variation button handler
+    variationBtn.addEventListener('click', generateVariation);
+
+    // Clear history button handler
+    clearHistoryBtn.addEventListener('click', clearHistory);
+
+    // ========================================
+    // VALIDATION
+    // ========================================
+
     // Validate form data
     function validateForm(data) {
         if (!data.topic) {
@@ -214,6 +539,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return true;
     }
+
+    // ========================================
+    // CONTENT GENERATION
+    // ========================================
 
     // Generate content using Netlify serverless function
     async function generateContent(data) {
@@ -360,11 +689,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Display the generated content
-    function displayResult(content) {
+    function displayResult(content, platform, topic) {
         generatedContent.textContent = content;
+        currentPlatform = platform || '';
         resultContainer.classList.remove('result-hidden');
+
+        // Add fade-in animation class
+        generatedContent.classList.add('fade-in');
+        setTimeout(() => generatedContent.classList.remove('fade-in'), 500);
+
+        // Update stats
+        updateContentStats();
+
+        // Save to history
+        if (platform && topic) {
+            saveToHistory(platform, topic, content);
+        }
+
         resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+
+    // ========================================
+    // NOTIFICATIONS
+    // ========================================
 
     // Toast notification system
     const toast = document.getElementById('toast');
@@ -389,8 +736,9 @@ document.addEventListener('DOMContentLoaded', function() {
         showToast(message, 'error');
     }
 
-    // Real-time character counter for textarea (optional enhancement)
-    // This is a placeholder for future functionality
+    // ========================================
+    // FORM FIELD ANIMATIONS
+    // ========================================
 
     // Form field animation on focus - using CSS classes
     const inputs = form.querySelectorAll('input, select, textarea');
@@ -403,4 +751,11 @@ document.addEventListener('DOMContentLoaded', function() {
             this.parentElement.classList.remove('form-group-focused');
         });
     });
+
+    // ========================================
+    // INITIALIZATION
+    // ========================================
+
+    // Load history on page load
+    renderHistory();
 });

@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Generátor obsahu pro sociální sítě - vytvořte poutavý obsah pomocí AI pro Facebook, Instagram, Twitter/X, LinkedIn a TikTok.">
     <title>Generátor obsahu pro sociální sítě</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -242,6 +245,9 @@
                         <span class="btn-text">Generovat obsah</span>
                         <span class="btn-loading-text">Generuji...</span>
                     </button>
+                    <button id="generate-variation" type="button" class="btn btn-variation" disabled>
+                        🔄 Nová variace
+                    </button>
                     <button type="reset" class="btn btn-secondary">
                         Vymazat formulář
                     </button>
@@ -252,6 +258,16 @@
                 <h2>Vygenerovaný obsah</h2>
                 <div class="result-content">
                     <div id="generatedContent" class="generated-text" role="region" aria-label="Vygenerovaný text"></div>
+
+                    <div class="content-stats">
+                        <span id="char-count">0 znaků</span>
+                        <span class="separator">|</span>
+                        <span id="word-count">0 slov</span>
+                        <span class="separator">|</span>
+                        <span id="read-time">0 min čtení</span>
+                        <span id="twitter-warning" class="warning hidden">⚠️ Překročen limit pro Twitter (280 znaků)</span>
+                    </div>
+
                     <div class="result-actions">
                         <button type="button" id="copyBtn" class="btn btn-small">
                             📋 Zkopírovat
@@ -260,8 +276,20 @@
                             ➕ Nový obsah
                         </button>
                     </div>
+
+                    <div class="export-buttons">
+                        <button id="export-txt" type="button" class="btn btn-export">📄 Stáhnout TXT</button>
+                        <button id="export-md" type="button" class="btn btn-export">📝 Stáhnout MD</button>
+                        <button id="export-html" type="button" class="btn btn-export">🌐 Stáhnout HTML</button>
+                    </div>
                 </div>
             </div>
+
+            <section class="history-section">
+                <h2>📚 Historie generování</h2>
+                <div id="history-list"></div>
+                <button id="clear-history" type="button" class="btn btn-secondary btn-small">🗑️ Vymazat historii</button>
+            </section>
         </main>
 
         <footer>
