@@ -215,18 +215,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
-    // Generate content (simulated - replace with actual API call)
-    function generateContent(data) {
-        return new Promise((resolve) => {
-            // Simulate API delay
-            setTimeout(() => {
-                // Get strategy data and merge with content data
-                const strategy = getStrategyData();
-                // This is a mock response. In production, this would call the ChatGPT API
-                const mockContent = generateMockContent(data, strategy);
-                resolve(mockContent);
-            }, 2000);
-        });
+    // Generate content using Netlify serverless function
+    async function generateContent(data) {
+        const strategy = getStrategyData();
+
+        // Try to use API to call serverless function
+        if (window.API) {
+            try {
+                return await window.API.generateContent(data, strategy);
+            } catch (error) {
+                console.warn('API call failed, using mock content:', error.message);
+                // Fallback to mock content if API fails (local development)
+                return generateMockContent(data, strategy);
+            }
+        }
+
+        // Fallback to mock content if API is not available
+        return generateMockContent(data, strategy);
     }
 
     // Generate mock content based on form data
