@@ -98,7 +98,10 @@ function buildPrompt(formData, strategy) {
         instagram: 'Instagram - vizuální platforma, kratší popisky, hodně emoji a hashtagů',
         twitter: 'Twitter/X - max 280 znaků, stručné a výstižné',
         linkedin: 'LinkedIn - profesionální síť, formálnější obsah',
-        tiktok: 'TikTok - mladé publikum, trendy, neformální'
+        tiktok: 'TikTok - mladé publikum, trendy, neformální',
+        'blogovy-clanek': 'Blogový článek - Napiš strukturovaný blogový článek. Struktura: poutavý titulek, úvod s hookem (1 odstavec), 3-5 hlavních sekcí s podnadpisy (použij ##), závěr s CTA. Používej krátké odstavce, odrážky kde vhodné. Zahrň klíčová slova přirozeně.',
+        'newsletter': 'Newsletter - Napiš newsletter email. Struktura: Předmět: [předmět emailu], Preheader: [1 věta], poté osobní oslovení, hlavní obsah rozdělený do 2-3 krátkých sekcí, jasné CTA, přátelský podpis. Buduj vztah se čtenářem.',
+        'emailing': 'Emailing - Napiš prodejní email podle AIDA frameworku. Struktura: Předmět: [max 50 znaků], Preheader: [1 věta], Headline, krátký body copy, 3-4 bullet points s benefity, CTA tlačítko: [text tlačítka], P.S. s urgencí nebo bonusem. Zaměř se na konverze.'
     };
 
     const toneDescriptions = {
@@ -109,10 +112,33 @@ function buildPrompt(formData, strategy) {
         inspirational: 'inspirativní a motivační'
     };
 
-    const lengthDescriptions = {
-        short: '50-100 slov',
-        medium: '100-200 slov',
-        long: '200-300 slov'
+    // Length descriptions based on content type
+    const getLengthDescription = (platform, length) => {
+        const lengthByPlatform = {
+            'blogovy-clanek': {
+                short: '400 slov',
+                medium: '600 slov',
+                long: '900 slov'
+            },
+            'newsletter': {
+                short: '150 slov',
+                medium: '250 slov',
+                long: '400 slov'
+            },
+            'emailing': {
+                short: '100 slov',
+                medium: '200 slov',
+                long: '300 slov'
+            }
+        };
+
+        const defaultLengths = {
+            short: '50-100 slov',
+            medium: '100-200 slov',
+            long: '200-300 slov'
+        };
+
+        return lengthByPlatform[platform]?.[length] || defaultLengths[length] || length;
     };
 
     const stdcDescriptions = {
@@ -138,7 +164,7 @@ function buildPrompt(formData, strategy) {
     prompt += `**Téma:** ${formData.topic}\n`;
     prompt += `**Platforma:** ${platformDescriptions[formData.platform] || formData.platform}\n`;
     prompt += `**Tón:** ${toneDescriptions[formData.tone] || formData.tone}\n`;
-    prompt += `**Délka:** ${lengthDescriptions[formData.length] || formData.length}\n`;
+    prompt += `**Délka:** ${getLengthDescription(formData.platform, formData.length)}\n`;
     prompt += `**STDC fáze:** ${stdcDescriptions[formData.stdcPhase] || formData.stdcPhase}\n`;
 
     if (formData.targetAudience) {

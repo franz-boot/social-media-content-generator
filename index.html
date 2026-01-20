@@ -137,11 +137,18 @@
                     </label>
                     <select id="platform" name="platform" required>
                         <option value="">Vyberte platformu...</option>
-                        <option value="facebook">Facebook</option>
-                        <option value="instagram">Instagram</option>
-                        <option value="twitter">Twitter/X</option>
-                        <option value="linkedin">LinkedIn</option>
-                        <option value="tiktok">TikTok</option>
+                        <optgroup label="Sociální sítě">
+                            <option value="facebook">Facebook</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="twitter">Twitter/X</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="tiktok">TikTok</option>
+                        </optgroup>
+                        <optgroup label="Email a blog">
+                            <option value="blogovy-clanek">Blogový článek</option>
+                            <option value="newsletter">Newsletter</option>
+                            <option value="emailing">Emailing</option>
+                        </optgroup>
                     </select>
                 </div>
 
@@ -230,9 +237,10 @@
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
                         <span class="btn-icon">✨</span>
-                        Generovat obsah
+                        <span class="btn-text">Generovat obsah</span>
+                        <span class="btn-loading-text">Generuji...</span>
                     </button>
                     <button type="reset" class="btn btn-secondary">
                         Vymazat formulář
@@ -245,10 +253,10 @@
                 <div class="result-content">
                     <div id="generatedContent" class="generated-text" role="region" aria-label="Vygenerovaný text"></div>
                     <div class="result-actions">
-                        <button id="copyBtn" class="btn btn-small">
+                        <button type="button" id="copyBtn" class="btn btn-small">
                             📋 Zkopírovat
                         </button>
-                        <button id="newContentBtn" class="btn btn-small btn-secondary">
+                        <button type="button" id="newContentBtn" class="btn btn-small btn-secondary">
                             ➕ Nový obsah
                         </button>
                     </div>
@@ -260,6 +268,9 @@
             <p>Powered by ChatGPT | &copy; <span id="currentYear"></span> Social Media Content Generator</p>
         </footer>
     </div>
+
+    <!-- Toast notification -->
+    <div id="toast" role="alert" aria-live="polite"></div>
 
     <script src="api.js"></script>
     <script src="script.js"></script>

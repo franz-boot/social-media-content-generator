@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error generating content:', error);
-                alert('Chyba při generování obsahu. Zkuste to prosím znovu.');
+                showErrorMessage('Chyba při generování obsahu. Zkuste to prosím znovu.');
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
             });
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showSuccessMessage('Obsah byl zkopírován do schránky!');
         } catch (err) {
             console.error('Fallback copy failed:', err);
-            alert('Nepodařilo se zkopírovat text automaticky. Použijte Ctrl+C pro kopírování.');
+            showErrorMessage('Nepodařilo se zkopírovat text. Použijte Ctrl+C.');
         }
 
         document.body.removeChild(textArea);
@@ -193,23 +193,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Validate form data
     function validateForm(data) {
         if (!data.topic) {
-            alert('Prosím vyplňte téma příspěvku.');
+            showErrorMessage('Prosím vyplňte téma příspěvku.');
             return false;
         }
         if (!data.platform) {
-            alert('Prosím vyberte platformu.');
+            showErrorMessage('Prosím vyberte platformu.');
             return false;
         }
         if (!data.tone) {
-            alert('Prosím vyberte tón příspěvku.');
+            showErrorMessage('Prosím vyberte tón příspěvku.');
             return false;
         }
         if (!data.length) {
-            alert('Prosím vyberte délku příspěvku.');
+            showErrorMessage('Prosím vyberte délku příspěvku.');
             return false;
         }
         if (!data.stdcPhase) {
-            alert('Prosím vyberte STDC fázi.');
+            showErrorMessage('Prosím vyberte STDC fázi.');
             return false;
         }
         return true;
@@ -241,7 +241,10 @@ document.addEventListener('DOMContentLoaded', function() {
             instagram: '📸',
             twitter: '🐦',
             linkedin: '💼',
-            tiktok: '🎵'
+            tiktok: '🎵',
+            'blogovy-clanek': '📝',
+            'newsletter': '📧',
+            'emailing': '💌'
         };
 
         const toneStyles = {
@@ -363,17 +366,27 @@ document.addEventListener('DOMContentLoaded', function() {
         resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Show success message
-    function showSuccessMessage(message) {
-        const successDiv = document.createElement('div');
-        successDiv.className = 'success-message';
-        successDiv.textContent = '✅ ' + message;
+    // Toast notification system
+    const toast = document.getElementById('toast');
 
-        resultContainer.insertBefore(successDiv, resultContainer.firstChild);
+    function showToast(message, type = 'success') {
+        toast.textContent = (type === 'success' ? '✓ ' : '✕ ') + message;
+        toast.className = type;
+        toast.classList.add('show');
 
         setTimeout(() => {
-            successDiv.remove();
+            toast.classList.remove('show');
         }, 3000);
+    }
+
+    // Show success message (using toast)
+    function showSuccessMessage(message) {
+        showToast(message, 'success');
+    }
+
+    // Show error message (using toast)
+    function showErrorMessage(message) {
+        showToast(message, 'error');
     }
 
     // Real-time character counter for textarea (optional enhancement)
