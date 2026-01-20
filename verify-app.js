@@ -5,8 +5,12 @@
  * This script validates that all required files exist and are properly formatted
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // ANSI color codes for output
 const colors = {
@@ -200,6 +204,18 @@ function runVerification() {
     }
 }
 
-// Run verification
-const exitCode = runVerification();
-process.exit(exitCode);
+// Export for testing
+export {
+    checkFileExists,
+    checkFileNotEmpty,
+    validateHTML,
+    validateJS,
+    validateCSS
+};
+
+// Run verification if called directly
+const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
+if (isMainModule) {
+    const exitCode = runVerification();
+    process.exit(exitCode);
+}

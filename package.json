@@ -2,6 +2,7 @@
   "name": "social-media-content-generator",
   "version": "1.0.0",
   "description": "Webová aplikace pro generování obsahu na sociální síti pomocí ChatGPT",
+  "type": "module",
   "scripts": {
     "test": "playwright test",
     "test:security": "node verify-app.test.js",
