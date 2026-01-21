@@ -428,7 +428,60 @@ document.addEventListener('DOMContentLoaded', function() {
     // Platform change event listener
     platformSelect.addEventListener('change', function() {
         updateLengthOptions(this.value);
+        updateQualityIndicator();
     });
+
+    // ========================================
+    // QUALITY INDICATOR
+    // ========================================
+
+    const qualityIndicator = document.getElementById('form-quality');
+    const qualityText = document.getElementById('quality-text');
+    const topicInput = document.getElementById('topic');
+    const toneSelect = document.getElementById('tone');
+    const stdcSelect = document.getElementById('stdcPhase');
+
+    function updateQualityIndicator() {
+        const requiredFields = [
+            { el: topicInput, filled: topicInput.value.trim() !== '' },
+            { el: platformSelect, filled: platformSelect.value !== '' },
+            { el: toneSelect, filled: toneSelect.value !== '' },
+            { el: lengthSelect, filled: lengthSelect.value !== '' },
+            { el: stdcSelect, filled: stdcSelect.value !== '' }
+        ];
+
+        const filledCount = requiredFields.filter(f => f.filled).length;
+        const totalRequired = requiredFields.length;
+
+        if (qualityText) {
+            qualityText.textContent = `Vyplněno ${filledCount}/${totalRequired} povinných polí`;
+        }
+
+        if (qualityIndicator) {
+            if (filledCount === totalRequired) {
+                qualityIndicator.classList.remove('incomplete');
+            } else {
+                qualityIndicator.classList.add('incomplete');
+            }
+        }
+    }
+
+    // Add event listeners for quality indicator
+    if (topicInput) {
+        topicInput.addEventListener('input', updateQualityIndicator);
+    }
+    if (toneSelect) {
+        toneSelect.addEventListener('change', updateQualityIndicator);
+    }
+    if (lengthSelect) {
+        lengthSelect.addEventListener('change', updateQualityIndicator);
+    }
+    if (stdcSelect) {
+        stdcSelect.addEventListener('change', updateQualityIndicator);
+    }
+
+    // Initialize quality indicator on page load
+    updateQualityIndicator();
 
     // Strategy form toggle functionality
     toggleBtn.addEventListener('click', function() {
@@ -843,6 +896,8 @@ ${content}
         resultContainer.classList.add('result-hidden');
         variationBtn.disabled = true;
         lastFormParams = null;
+        // Reset quality indicator after form is cleared
+        setTimeout(updateQualityIndicator, 0);
     });
 
     // ========================================

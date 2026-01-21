@@ -30,14 +30,16 @@
             <div id="single-tab" class="tab-content active">
 
             <!-- Templates Section -->
-            <section class="templates-section card">
+            <section class="templates-section card card-medium">
+                <span class="priority-badge">💡 Zrychlí práci</span>
                 <h2>🎯 Rychlé šablony</h2>
                 <p class="section-description">Vyberte předpřipravenou šablonu pro rychlé generování</p>
                 <div class="templates-grid" id="templates-grid"></div>
             </section>
 
             <!-- Favorites Section -->
-            <section class="favorites-section card">
+            <section class="favorites-section card card-medium">
+                <span class="priority-badge">💡 Zrychlí práci</span>
                 <h2>⭐ Moje oblíbené</h2>
                 <p class="section-description">Vaše uložená nastavení formuláře</p>
                 <div class="favorites-grid" id="favorites-grid">
@@ -46,7 +48,8 @@
             </section>
 
             <!-- Strategic Communication Line Section -->
-            <section class="strategy-section">
+            <section class="strategy-section card card-high">
+                <span class="priority-badge">⭐ Doporučeno</span>
                 <div class="strategy-header" id="strategyToggle">
                     <h2>📋 Strategická komunikační linka</h2>
                     <button type="button" class="toggle-btn" aria-expanded="false" aria-controls="strategyForm">
@@ -146,10 +149,17 @@
             <hr class="section-divider">
 
             <!-- Content Generation Form -->
-            <form id="contentForm" class="content-form">
-                <h2>✍️ Generování příspěvku</h2>
+            <form id="contentForm" class="content-form card card-critical">
+                <span class="priority-badge">🔥 Povinné pro kvalitní výstup</span>
+                <div class="section-header">
+                    <h2>✍️ Generování příspěvku</h2>
+                    <div class="quality-indicator incomplete" id="form-quality">
+                        <span class="dot"></span>
+                        <span id="quality-text">Vyplněno 0/5 povinných polí</span>
+                    </div>
+                </div>
 
-                <div class="form-group">
+                <div class="form-group required">
                     <label for="topic">
                         <span class="label-text">Téma příspěvku</span>
                         <span class="required">*</span>
@@ -158,7 +168,7 @@
                         required>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group required">
                     <label for="platform">
                         <span class="label-text">Platforma</span>
                         <span class="required">*</span>
@@ -180,7 +190,7 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group required">
                     <label for="tone">
                         <span class="label-text">Tón příspěvku</span>
                         <span class="required">*</span>
@@ -195,7 +205,7 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group required">
                     <label for="length">
                         <span class="label-text">Délka příspěvku</span>
                         <span class="required">*</span>
@@ -208,7 +218,7 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group required">
                     <label for="stdcPhase">
                         <span class="label-text">STDC fáze</span>
                         <span class="required">*</span>
@@ -223,45 +233,54 @@
                     <small class="help-text">Vyberte fázi zákaznické cesty pro lepší zacílení obsahu</small>
                 </div>
 
-                <div class="form-group">
-                    <label for="targetAudience">
-                        <span class="label-text">Cílová skupina</span>
-                    </label>
-                    <input type="text" id="targetAudience" name="targetAudience" placeholder="Např. 'mladí podnikatelé 25-35 let'">
-                    <small class="help-text">Popište vaši cílovou skupinu (věk, zájmy, profese)</small>
-                </div>
+                <!-- Optional Fields Section -->
+                <div class="optional-fields-section card-low" style="padding: 20px; border-radius: 12px; margin-top: 8px;">
+                    <span class="priority-badge">➕ Volitelné</span>
 
-                <div class="form-group">
-                    <label for="callToAction">
-                        <span class="label-text">Výzva k akci (CTA)</span>
-                    </label>
-                    <select id="callToAction" name="callToAction">
-                        <option value="">Žádná specifická CTA</option>
-                        <option value="learn_more">Zjistit více</option>
-                        <option value="sign_up">Registrace / Přihlášení</option>
-                        <option value="buy_now">Koupit nyní</option>
-                        <option value="contact">Kontaktovat nás</option>
-                        <option value="share">Sdílet příspěvek</option>
-                        <option value="comment">Zanechat komentář</option>
-                        <option value="visit_website">Navštívit web</option>
-                        <option value="download">Stáhnout</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="targetAudience">
+                            <span class="label-text">Cílová skupina</span>
+                            <span class="optional">(volitelné)</span>
+                        </label>
+                        <input type="text" id="targetAudience" name="targetAudience" placeholder="Např. 'mladí podnikatelé 25-35 let'">
+                        <small class="help-text">Popište vaši cílovou skupinu (věk, zájmy, profese)</small>
+                    </div>
 
-                <div class="form-group">
-                    <label for="keywords">
-                        <span class="label-text">Klíčová slova (volitelné)</span>
-                    </label>
-                    <input type="text" id="keywords" name="keywords" placeholder="Např. 'marketing, strategie, růst'">
-                    <small class="help-text">Oddělte klíčová slova čárkami</small>
-                </div>
+                    <div class="form-group">
+                        <label for="callToAction">
+                            <span class="label-text">Výzva k akci (CTA)</span>
+                            <span class="optional">(volitelné)</span>
+                        </label>
+                        <select id="callToAction" name="callToAction">
+                            <option value="">Žádná specifická CTA</option>
+                            <option value="learn_more">Zjistit více</option>
+                            <option value="sign_up">Registrace / Přihlášení</option>
+                            <option value="buy_now">Koupit nyní</option>
+                            <option value="contact">Kontaktovat nás</option>
+                            <option value="share">Sdílet příspěvek</option>
+                            <option value="comment">Zanechat komentář</option>
+                            <option value="visit_website">Navštívit web</option>
+                            <option value="download">Stáhnout</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="additionalInfo">
-                        <span class="label-text">Další informace (volitelné)</span>
-                    </label>
-                    <textarea id="additionalInfo" name="additionalInfo" rows="4"
-                        placeholder="Přidejte jakékoli další pokyny nebo kontext..."></textarea>
+                    <div class="form-group">
+                        <label for="keywords">
+                            <span class="label-text">Klíčová slova</span>
+                            <span class="optional">(volitelné)</span>
+                        </label>
+                        <input type="text" id="keywords" name="keywords" placeholder="Např. 'marketing, strategie, růst'">
+                        <small class="help-text">Oddělte klíčová slova čárkami</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalInfo">
+                            <span class="label-text">Další informace</span>
+                            <span class="optional">(volitelné)</span>
+                        </label>
+                        <textarea id="additionalInfo" name="additionalInfo" rows="4"
+                            placeholder="Přidejte jakékoli další pokyny nebo kontext..."></textarea>
+                    </div>
                 </div>
 
                 <div class="form-actions">
@@ -282,8 +301,8 @@
                 </div>
             </form>
 
-            <div id="result" class="result-container result-hidden" aria-live="polite">
-                <h2>Vygenerovaný obsah</h2>
+            <div id="result" class="result-container card output-section result-hidden" aria-live="polite">
+                <h2>✅ Vygenerovaný obsah</h2>
                 <div class="result-content">
                     <div id="generatedContent" class="generated-text" role="region" aria-label="Vygenerovaný text"></div>
 
@@ -313,7 +332,8 @@
                 </div>
             </div>
 
-            <section class="history-section">
+            <section class="history-section card card-low">
+                <span class="priority-badge">📚 Historie</span>
                 <h2>📚 Historie generování</h2>
                 <div id="history-list"></div>
                 <button id="clear-history" type="button" class="btn btn-secondary btn-small">🗑️ Vymazat historii</button>
