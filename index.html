@@ -20,6 +20,22 @@
         </header>
 
         <main>
+            <!-- Templates Section -->
+            <section class="templates-section card">
+                <h2>🎯 Rychlé šablony</h2>
+                <p class="section-description">Vyberte předpřipravenou šablonu pro rychlé generování</p>
+                <div class="templates-grid" id="templates-grid"></div>
+            </section>
+
+            <!-- Favorites Section -->
+            <section class="favorites-section card">
+                <h2>⭐ Moje oblíbené</h2>
+                <p class="section-description">Vaše uložená nastavení formuláře</p>
+                <div class="favorites-grid" id="favorites-grid">
+                    <div class="empty-state" id="favorites-empty">Zatím nemáte žádná oblíbená nastavení</div>
+                </div>
+            </section>
+
             <!-- Strategic Communication Line Section -->
             <section class="strategy-section">
                 <div class="strategy-header" id="strategyToggle">
@@ -248,6 +264,9 @@
                     <button id="generate-variation" type="button" class="btn btn-variation" disabled>
                         🔄 Nová variace
                     </button>
+                    <button type="button" id="save-favorite" class="btn btn-secondary">
+                        ⭐ Uložit jako oblíbené
+                    </button>
                     <button type="reset" class="btn btn-secondary">
                         Vymazat formulář
                     </button>
@@ -299,6 +318,18 @@
 
     <!-- Toast notification -->
     <div id="toast" role="alert" aria-live="polite"></div>
+
+    <!-- Modal for saving favorites -->
+    <div class="modal-overlay" id="save-modal" hidden>
+        <div class="modal">
+            <h3>⭐ Uložit nastavení</h3>
+            <input type="text" id="favorite-name" placeholder="Název oblíbeného nastavení" maxlength="50">
+            <div class="modal-buttons">
+                <button type="button" id="modal-cancel" class="btn btn-secondary">Zrušit</button>
+                <button type="button" id="modal-save" class="btn btn-primary">Uložit</button>
+            </div>
+        </div>
+    </div>
 
     <script src="api.js"></script>
     <script src="script.js"></script>

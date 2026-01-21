@@ -72,6 +72,334 @@ document.addEventListener('DOMContentLoaded', function() {
         ]
     };
 
+    // ========================================
+    // TEMPLATES
+    // ========================================
+
+    const templates = [
+        {
+            id: 'promo-eshop',
+            name: 'Promo e-shop',
+            icon: '🛒',
+            description: 'Propagace produktu pro e-shop',
+            settings: {
+                platform: 'facebook',
+                tone: 'friendly',
+                length: 'stredni',
+                stdcPhase: 'do',
+                callToAction: 'buy_now'
+            }
+        },
+        {
+            id: 'vzdelavaci-linkedin',
+            name: 'Vzdělávací LinkedIn',
+            icon: '📚',
+            description: 'Odborný příspěvek pro LinkedIn',
+            settings: {
+                platform: 'linkedin',
+                tone: 'professional',
+                length: 'dlouhy',
+                stdcPhase: 'think',
+                callToAction: 'learn_more'
+            }
+        },
+        {
+            id: 'instagram-story',
+            name: 'Instagram engagement',
+            icon: '📸',
+            description: 'Poutavý post pro Instagram',
+            settings: {
+                platform: 'instagram',
+                tone: 'casual',
+                length: 'kratky',
+                stdcPhase: 'see',
+                callToAction: 'comment'
+            }
+        },
+        {
+            id: 'newsletter-novinky',
+            name: 'Newsletter novinky',
+            icon: '📧',
+            description: 'Pravidelný newsletter pro zákazníky',
+            settings: {
+                platform: 'newsletter',
+                tone: 'friendly',
+                length: 'stredni',
+                stdcPhase: 'care',
+                callToAction: 'learn_more'
+            }
+        },
+        {
+            id: 'blog-navod',
+            name: 'Blog návod',
+            icon: '✍️',
+            description: 'Návod nebo how-to článek',
+            settings: {
+                platform: 'blogovy-clanek',
+                tone: 'professional',
+                length: 'dlouhy',
+                stdcPhase: 'think',
+                callToAction: ''
+            }
+        },
+        {
+            id: 'prodejni-email',
+            name: 'Prodejní email',
+            icon: '💰',
+            description: 'Konverzní email s CTA',
+            settings: {
+                platform: 'emailing',
+                tone: 'professional',
+                length: 'stredni',
+                stdcPhase: 'do',
+                callToAction: 'buy_now'
+            }
+        }
+    ];
+
+    let activeTemplateId = null;
+
+    function renderTemplates() {
+        const templatesGrid = document.getElementById('templates-grid');
+        templatesGrid.innerHTML = templates.map(template => `
+            <div class="template-card${activeTemplateId === template.id ? ' active' : ''}" data-id="${template.id}">
+                <div class="template-icon">${template.icon}</div>
+                <div class="template-name">${template.name}</div>
+                <div class="template-description">${template.description}</div>
+            </div>
+        `).join('');
+
+        // Add event listeners
+        templatesGrid.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', () => applyTemplate(card.dataset.id));
+        });
+    }
+
+    function applyTemplate(templateId) {
+        const template = templates.find(t => t.id === templateId);
+        if (!template) return;
+
+        activeTemplateId = templateId;
+
+        // Apply settings to form
+        const { settings } = template;
+
+        // Update platform first (this triggers length options update)
+        if (settings.platform) {
+            platformSelect.value = settings.platform;
+            updateLengthOptions(settings.platform);
+        }
+
+        if (settings.tone) {
+            document.getElementById('tone').value = settings.tone;
+        }
+        if (settings.length) {
+            lengthSelect.value = settings.length;
+        }
+        if (settings.stdcPhase) {
+            document.getElementById('stdcPhase').value = settings.stdcPhase;
+        }
+        if (settings.callToAction !== undefined) {
+            document.getElementById('callToAction').value = settings.callToAction;
+        }
+
+        // Re-render to show active state
+        renderTemplates();
+
+        // Scroll to form
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        showSuccessMessage(`Šablona "${template.name}" byla aplikována.`);
+    }
+
+    // ========================================
+    // FAVORITES
+    // ========================================
+
+    const FAVORITES_KEY = 'contentGeneratorFavorites';
+
+    // Modal elements
+    const saveModal = document.getElementById('save-modal');
+    const favoriteNameInput = document.getElementById('favorite-name');
+    const modalCancelBtn = document.getElementById('modal-cancel');
+    const modalSaveBtn = document.getElementById('modal-save');
+    const saveFavoriteBtn = document.getElementById('save-favorite');
+
+    function loadFavorites() {
+        const favorites = JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]');
+        return favorites;
+    }
+
+    function saveFavorites(favorites) {
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    }
+
+    function getCurrentFormSettings() {
+        return {
+            platform: platformSelect.value,
+            tone: document.getElementById('tone').value,
+            length: lengthSelect.value,
+            stdcPhase: document.getElementById('stdcPhase').value,
+            targetAudience: document.getElementById('targetAudience').value,
+            callToAction: document.getElementById('callToAction').value,
+            keywords: document.getElementById('keywords').value,
+            additionalInfo: document.getElementById('additionalInfo').value
+        };
+    }
+
+    function openSaveModal() {
+        favoriteNameInput.value = '';
+        saveModal.hidden = false;
+        favoriteNameInput.focus();
+    }
+
+    function closeSaveModal() {
+        saveModal.hidden = true;
+        favoriteNameInput.value = '';
+    }
+
+    function saveFavorite() {
+        const name = favoriteNameInput.value.trim();
+        if (!name) {
+            showErrorMessage('Zadejte název oblíbeného nastavení.');
+            return;
+        }
+
+        const favorites = loadFavorites();
+        const newFavorite = {
+            id: 'fav-' + Date.now(),
+            name: name,
+            createdAt: Date.now(),
+            settings: getCurrentFormSettings()
+        };
+
+        favorites.unshift(newFavorite);
+        saveFavorites(favorites);
+
+        closeSaveModal();
+        renderFavorites();
+        showSuccessMessage(`Oblíbené "${name}" bylo uloženo.`);
+    }
+
+    function renderFavorites() {
+        const favoritesGrid = document.getElementById('favorites-grid');
+        const favorites = loadFavorites();
+
+        if (favorites.length === 0) {
+            favoritesGrid.innerHTML = '<div class="empty-state" id="favorites-empty">Zatím nemáte žádná oblíbená nastavení</div>';
+            return;
+        }
+
+        favoritesGrid.innerHTML = favorites.map(fav => `
+            <div class="favorite-card" data-id="${fav.id}">
+                <button type="button" class="favorite-delete" data-id="${fav.id}" title="Smazat">×</button>
+                <div class="favorite-icon">⭐</div>
+                <div class="favorite-name">${fav.name}</div>
+                <div class="favorite-description">${getPlatformLabel(fav.settings.platform) || 'Vlastní'}</div>
+            </div>
+        `).join('');
+
+        // Add event listeners for applying favorites
+        favoritesGrid.querySelectorAll('.favorite-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('favorite-delete')) {
+                    applyFavorite(card.dataset.id);
+                }
+            });
+        });
+
+        // Add event listeners for deleting favorites
+        favoritesGrid.querySelectorAll('.favorite-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteFavorite(btn.dataset.id);
+            });
+        });
+    }
+
+    function applyFavorite(id) {
+        const favorites = loadFavorites();
+        const favorite = favorites.find(f => f.id === id);
+        if (!favorite) return;
+
+        const { settings } = favorite;
+
+        // Clear active template
+        activeTemplateId = null;
+        renderTemplates();
+
+        // Update platform first (this triggers length options update)
+        if (settings.platform) {
+            platformSelect.value = settings.platform;
+            updateLengthOptions(settings.platform);
+        }
+
+        if (settings.tone) {
+            document.getElementById('tone').value = settings.tone;
+        }
+        if (settings.length) {
+            lengthSelect.value = settings.length;
+        }
+        if (settings.stdcPhase) {
+            document.getElementById('stdcPhase').value = settings.stdcPhase;
+        }
+        if (settings.targetAudience !== undefined) {
+            document.getElementById('targetAudience').value = settings.targetAudience;
+        }
+        if (settings.callToAction !== undefined) {
+            document.getElementById('callToAction').value = settings.callToAction;
+        }
+        if (settings.keywords !== undefined) {
+            document.getElementById('keywords').value = settings.keywords;
+        }
+        if (settings.additionalInfo !== undefined) {
+            document.getElementById('additionalInfo').value = settings.additionalInfo;
+        }
+
+        // Scroll to form
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        showSuccessMessage(`Oblíbené "${favorite.name}" bylo aplikováno.`);
+    }
+
+    function deleteFavorite(id) {
+        if (!confirm('Opravdu chcete smazat toto oblíbené nastavení?')) {
+            return;
+        }
+
+        let favorites = loadFavorites();
+        favorites = favorites.filter(f => f.id !== id);
+        saveFavorites(favorites);
+        renderFavorites();
+        showSuccessMessage('Oblíbené bylo smazáno.');
+    }
+
+    // Modal event listeners
+    saveFavoriteBtn.addEventListener('click', openSaveModal);
+    modalCancelBtn.addEventListener('click', closeSaveModal);
+    modalSaveBtn.addEventListener('click', saveFavorite);
+
+    // Close modal on overlay click
+    saveModal.addEventListener('click', (e) => {
+        if (e.target === saveModal) {
+            closeSaveModal();
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !saveModal.hidden) {
+            closeSaveModal();
+        }
+    });
+
+    // Save on Enter key in modal
+    favoriteNameInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            saveFavorite();
+        }
+    });
+
     // Function to update length options based on platform
     function updateLengthOptions(platform) {
         const options = delkaOptions[platform] || delkaOptions.default;
@@ -829,4 +1157,8 @@ ${content}
 
     // Load history on page load
     renderHistory();
+
+    // Load templates and favorites on page load
+    renderTemplates();
+    renderFavorites();
 });
