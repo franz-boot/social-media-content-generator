@@ -1152,8 +1152,266 @@ ${content}
     });
 
     // ========================================
+    // TABS FUNCTIONALITY
+    // ========================================
+
+    function initTabs() {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons and hide all content
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => {
+                    c.classList.remove('active');
+                    c.hidden = true;
+                });
+
+                // Activate clicked button and show corresponding content
+                btn.classList.add('active');
+                const tabContent = document.getElementById(btn.dataset.tab + '-tab');
+                if (tabContent) {
+                    tabContent.hidden = false;
+                    tabContent.classList.add('active');
+                }
+            });
+        });
+    }
+
+    // ========================================
+    // BULK GENERATION
+    // ========================================
+
+    // Store bulk results for export
+    window.bulkResults = [];
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    async function bulkGenerate() {
+        const topicsText = document.getElementById('bulk-topics').value.trim();
+        const topics = topicsText.split('\n').filter(t => t.trim()).slice(0, 10);
+
+        if (topics.length === 0) {
+            showErrorMessage('Zadejte alespoň jedno téma');
+            return;
+        }
+
+        const platforma = document.getElementById('bulk-platforma').value;
+        const ton = document.getElementById('bulk-ton').value;
+        const delka = document.getElementById('bulk-delka').value;
+        const stdc = document.getElementById('bulk-stdc').value;
+
+        // Validate required fields
+        if (!platforma) {
+            showErrorMessage('Vyberte platformu');
+            return;
+        }
+        if (!ton) {
+            showErrorMessage('Vyberte tón');
+            return;
+        }
+        if (!delka) {
+            showErrorMessage('Vyberte délku');
+            return;
+        }
+        if (!stdc) {
+            showErrorMessage('Vyberte STDC fázi');
+            return;
+        }
+
+        const settings = {
+            platform: platforma,
+            tone: ton,
+            length: delka,
+            stdcPhase: stdc,
+            useStrategy: document.getElementById('bulk-use-strategy').checked
+        };
+
+        // Show loading state
+        const bulkBtn = document.getElementById('bulk-generate');
+        bulkBtn.classList.add('loading');
+        bulkBtn.disabled = true;
+
+        // Show results section
+        document.getElementById('bulk-results').hidden = false;
+        document.getElementById('bulk-results-list').innerHTML = '';
+
+        const results = [];
+
+        for (let i = 0; i < topics.length; i++) {
+            updateBulkProgress(i, topics.length);
+
+            // Add placeholder for current topic
+            addBulkResultPlaceholder(topics[i].trim(), i);
+
+            try {
+                const formData = {
+                    topic: topics[i].trim(),
+                    platform: settings.platform,
+                    tone: settings.tone,
+                    length: settings.length,
+                    stdcPhase: settings.stdcPhase,
+                    targetAudience: '',
+                    callToAction: '',
+                    keywords: '',
+                    additionalInfo: ''
+                };
+
+                const strategy = settings.useStrategy ? getStrategyData() : null;
+                let content;
+
+                // Use API if available
+                if (window.API) {
+                    try {
+                        content = await window.API.generateContent(formData, strategy);
+                    } catch (error) {
+                        console.warn('API call failed, using mock content:', error.message);
+                        content = generateMockContent(formData, strategy);
+                    }
+                } else {
+                    content = generateMockContent(formData, strategy);
+                }
+
+                results.push({ topic: topics[i].trim(), content, success: true });
+                updateBulkResult(i, content, true);
+
+            } catch (error) {
+                results.push({ topic: topics[i].trim(), error: error.message, success: false });
+                updateBulkResult(i, error.message, false);
+            }
+
+            // Small pause between requests (rate limiting)
+            if (i < topics.length - 1) {
+                await new Promise(r => setTimeout(r, 1000));
+            }
+        }
+
+        updateBulkProgress(topics.length, topics.length);
+        showSuccessMessage(`Vygenerováno ${results.filter(r => r.success).length} z ${topics.length} příspěvků`);
+
+        // Store results for export
+        window.bulkResults = results;
+
+        // Reset button state
+        bulkBtn.classList.remove('loading');
+        bulkBtn.disabled = false;
+    }
+
+    function updateBulkProgress(current, total) {
+        document.getElementById('bulk-progress-text').textContent = `${current} / ${total}`;
+        const percentage = total > 0 ? (current / total) * 100 : 0;
+        document.getElementById('bulk-progress-fill').style.width = `${percentage}%`;
+    }
+
+    function addBulkResultPlaceholder(topic, index) {
+        const html = `
+            <div class="bulk-result-item" id="bulk-result-${index}">
+                <div class="bulk-result-header">
+                    <span class="bulk-result-topic">${escapeHtml(topic)}</span>
+                    <span class="bulk-result-status loading">⏳ Generuji...</span>
+                </div>
+                <div class="bulk-result-content">
+                    <div class="skeleton-loader"></div>
+                </div>
+            </div>
+        `;
+        document.getElementById('bulk-results-list').insertAdjacentHTML('beforeend', html);
+    }
+
+    function updateBulkResult(index, content, success) {
+        const item = document.getElementById(`bulk-result-${index}`);
+        if (!item) return;
+
+        const statusEl = item.querySelector('.bulk-result-status');
+        const contentEl = item.querySelector('.bulk-result-content');
+
+        if (success) {
+            statusEl.textContent = '✅ Hotovo';
+            statusEl.className = 'bulk-result-status success';
+            contentEl.innerHTML = `
+                <div class="bulk-result-text">${escapeHtml(content)}</div>
+                <button class="btn btn-small bulk-copy-btn" data-index="${index}">📋 Kopírovat</button>
+            `;
+            // Add copy event listener
+            const copyBtn = contentEl.querySelector('.bulk-copy-btn');
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(content).then(() => {
+                    showSuccessMessage('Zkopírováno do schránky');
+                }).catch(() => {
+                    fallbackCopyText(content);
+                });
+            });
+        } else {
+            statusEl.textContent = '❌ Chyba';
+            statusEl.className = 'bulk-result-status error';
+            contentEl.innerHTML = `<div class="bulk-result-error">${escapeHtml(content)}</div>`;
+        }
+    }
+
+    function exportAllBulk() {
+        if (!window.bulkResults || window.bulkResults.length === 0) {
+            showErrorMessage('Žádné výsledky k exportu');
+            return;
+        }
+
+        const successfulResults = window.bulkResults.filter(r => r.success);
+        if (successfulResults.length === 0) {
+            showErrorMessage('Žádné úspěšné výsledky k exportu');
+            return;
+        }
+
+        let allContent = successfulResults
+            .map((r, i) => `=== ${i + 1}. ${r.topic} ===\n\n${r.content}`)
+            .join('\n\n---\n\n');
+
+        downloadFile(allContent, 'bulk-content.txt', 'text/plain;charset=utf-8');
+        showSuccessMessage('Export dokončen');
+    }
+
+    function copyAllBulk() {
+        if (!window.bulkResults || window.bulkResults.length === 0) {
+            showErrorMessage('Žádné výsledky ke kopírování');
+            return;
+        }
+
+        const successfulResults = window.bulkResults.filter(r => r.success);
+        if (successfulResults.length === 0) {
+            showErrorMessage('Žádné úspěšné výsledky ke kopírování');
+            return;
+        }
+
+        let allContent = successfulResults
+            .map((r, i) => `=== ${i + 1}. ${r.topic} ===\n\n${r.content}`)
+            .join('\n\n---\n\n');
+
+        navigator.clipboard.writeText(allContent).then(() => {
+            showSuccessMessage('Vše zkopírováno do schránky');
+        }).catch(() => {
+            fallbackCopyText(allContent);
+        });
+    }
+
+    function clearBulkResults() {
+        document.getElementById('bulk-results').hidden = true;
+        document.getElementById('bulk-results-list').innerHTML = '';
+        window.bulkResults = [];
+        updateBulkProgress(0, 0);
+    }
+
+    // Bulk generation event listeners
+    document.getElementById('bulk-generate')?.addEventListener('click', bulkGenerate);
+    document.getElementById('bulk-export-all')?.addEventListener('click', exportAllBulk);
+    document.getElementById('bulk-copy-all')?.addEventListener('click', copyAllBulk);
+    document.getElementById('bulk-clear')?.addEventListener('click', clearBulkResults);
+
+    // ========================================
     // INITIALIZATION
     // ========================================
+
+    // Initialize tabs
+    initTabs();
 
     // Load history on page load
     renderHistory();

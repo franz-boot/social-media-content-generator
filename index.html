@@ -20,6 +20,15 @@
         </header>
 
         <main>
+            <!-- Tab Navigation -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="single">✍️ Jednotlivé</button>
+                <button class="tab-btn" data-tab="bulk">📦 Bulk generování</button>
+            </div>
+
+            <!-- Single Generation Tab -->
+            <div id="single-tab" class="tab-content active">
+
             <!-- Templates Section -->
             <section class="templates-section card">
                 <h2>🎯 Rychlé šablony</h2>
@@ -309,6 +318,130 @@
                 <div id="history-list"></div>
                 <button id="clear-history" type="button" class="btn btn-secondary btn-small">🗑️ Vymazat historii</button>
             </section>
+
+            </div><!-- End single-tab -->
+
+            <!-- Bulk Generation Tab -->
+            <div id="bulk-tab" class="tab-content" hidden>
+                <section class="card">
+                    <h2>📦 Bulk generování obsahu</h2>
+                    <p class="section-description">Zadejte více témat najednou a vygenerujte obsah hromadně</p>
+
+                    <div class="form-group">
+                        <label for="bulk-topics">
+                            <span class="label-text">Témata (každé na nový řádek)</span>
+                            <span class="required">*</span>
+                        </label>
+                        <textarea id="bulk-topics" rows="6" placeholder="Jarní kolekce oblečení
+Valentýnská sleva 20%
+Nový produkt v nabídce
+Zákaznická recenze"></textarea>
+                        <span class="helper-text">Maximálně 10 témat najednou</span>
+                    </div>
+
+                    <div class="bulk-settings">
+                        <div class="form-group">
+                            <label for="bulk-platforma">
+                                <span class="label-text">Platforma</span>
+                                <span class="required">*</span>
+                            </label>
+                            <select id="bulk-platforma">
+                                <option value="">Vyberte platformu...</option>
+                                <optgroup label="Sociální sítě">
+                                    <option value="facebook">Facebook</option>
+                                    <option value="instagram">Instagram</option>
+                                    <option value="twitter">Twitter/X</option>
+                                    <option value="linkedin">LinkedIn</option>
+                                    <option value="tiktok">TikTok</option>
+                                </optgroup>
+                                <optgroup label="Email a blog">
+                                    <option value="blogovy-clanek">Blogový článek</option>
+                                    <option value="newsletter">Newsletter</option>
+                                    <option value="emailing">Emailing</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bulk-ton">
+                                <span class="label-text">Tón</span>
+                                <span class="required">*</span>
+                            </label>
+                            <select id="bulk-ton">
+                                <option value="">Vyberte tón...</option>
+                                <option value="professional">Profesionální</option>
+                                <option value="casual">Neformální</option>
+                                <option value="friendly">Přátelský</option>
+                                <option value="humorous">Humorný</option>
+                                <option value="inspirational">Inspirativní</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bulk-delka">
+                                <span class="label-text">Délka</span>
+                                <span class="required">*</span>
+                            </label>
+                            <select id="bulk-delka">
+                                <option value="">Vyberte délku...</option>
+                                <option value="kratky">Krátký (50-100 slov)</option>
+                                <option value="stredni">Střední (100-200 slov)</option>
+                                <option value="dlouhy">Dlouhý (200-300 slov)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bulk-stdc">
+                                <span class="label-text">STDC fáze</span>
+                                <span class="required">*</span>
+                            </label>
+                            <select id="bulk-stdc">
+                                <option value="">Vyberte fázi...</option>
+                                <option value="see">See - Budování povědomí</option>
+                                <option value="think">Think - Zvažování</option>
+                                <option value="do">Do - Akce</option>
+                                <option value="care">Care - Péče</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="bulk-use-strategy">
+                            <span>Použít strategickou komunikační linku</span>
+                        </label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="bulk-generate" class="btn btn-primary">
+                            <span class="btn-icon">🚀</span>
+                            <span class="btn-text">Generovat vše</span>
+                            <span class="btn-loading-text">Generuji...</span>
+                        </button>
+                    </div>
+                </section>
+
+                <section class="card" id="bulk-results" hidden>
+                    <div class="bulk-results-header">
+                        <h2>📋 Výsledky bulk generování</h2>
+                        <div class="bulk-progress">
+                            <span id="bulk-progress-text">0 / 0</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="bulk-progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="bulk-results-list"></div>
+
+                    <div class="bulk-actions">
+                        <button type="button" id="bulk-export-all" class="btn btn-secondary">📥 Exportovat vše</button>
+                        <button type="button" id="bulk-copy-all" class="btn btn-secondary">📋 Kopírovat vše</button>
+                        <button type="button" id="bulk-clear" class="btn btn-secondary">🗑️ Vymazat</button>
+                    </div>
+                </section>
+            </div><!-- End bulk-tab -->
+
         </main>
 
         <footer>
