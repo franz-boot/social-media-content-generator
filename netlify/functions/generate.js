@@ -26,6 +26,10 @@ export async function handler(event) {
         // Build the prompt
         const prompt = buildPrompt(formData, strategy);
 
+        // Determine max_tokens based on content type and length
+        const isExtraLongBlog = formData.platform === 'blogovy-clanek' && formData.length === 'extra-long';
+        const maxTokens = isExtraLongBlog ? 2000 : 1000;
+
         // Call OpenAI API
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -45,7 +49,7 @@ export async function handler(event) {
                         content: prompt
                     }
                 ],
-                max_tokens: 1000,
+                max_tokens: maxTokens,
                 temperature: 0.7
             })
         });
@@ -116,9 +120,10 @@ function buildPrompt(formData, strategy) {
     const getLengthDescription = (platform, length) => {
         const lengthByPlatform = {
             'blogovy-clanek': {
-                short: '400 slov',
-                medium: '600 slov',
-                long: '900 slov'
+                short: 'Článek by měl mít 400-500 slov',
+                medium: 'Článek by měl mít 600-800 slov',
+                long: 'Článek by měl mít 900-1200 slov',
+                'extra-long': 'Článek by měl mít 1500-2000 slov, rozděl do více sekcí s podnadpisy'
             },
             'newsletter': {
                 short: '150 slov',

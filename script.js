@@ -35,6 +35,57 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastFormParams = null;
     let currentPlatform = '';
 
+    // Length select element
+    const lengthSelect = document.getElementById('length');
+    const platformSelect = document.getElementById('platform');
+
+    // Original length options for social media
+    const socialMediaLengthOptions = [
+        { value: '', text: 'Vyberte délku...' },
+        { value: 'short', text: 'Krátký (50-100 slov)' },
+        { value: 'medium', text: 'Střední (100-200 slov)' },
+        { value: 'long', text: 'Dlouhý (200-300 slov)' }
+    ];
+
+    // Blog article length options
+    const blogLengthOptions = [
+        { value: '', text: 'Vyberte délku...' },
+        { value: 'short', text: 'Krátký (400-500 slov)' },
+        { value: 'medium', text: 'Střední (600-800 slov)' },
+        { value: 'long', text: 'Dlouhý (900-1200 slov)' },
+        { value: 'extra-long', text: 'Extra dlouhý (1500-2000 slov)' }
+    ];
+
+    // Function to update length options based on platform
+    function updateLengthOptions(platform) {
+        const options = platform === 'blogovy-clanek' ? blogLengthOptions : socialMediaLengthOptions;
+
+        // Store current selection
+        const currentValue = lengthSelect.value;
+
+        // Clear and repopulate options
+        lengthSelect.innerHTML = '';
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.text;
+            lengthSelect.appendChild(option);
+        });
+
+        // Restore selection if it exists in new options
+        const validValues = options.map(o => o.value);
+        if (validValues.includes(currentValue)) {
+            lengthSelect.value = currentValue;
+        } else {
+            lengthSelect.value = '';
+        }
+    }
+
+    // Platform change event listener
+    platformSelect.addEventListener('change', function() {
+        updateLengthOptions(this.value);
+    });
+
     // Strategy form toggle functionality
     toggleBtn.addEventListener('click', function() {
         const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
