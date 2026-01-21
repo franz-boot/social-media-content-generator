@@ -39,26 +39,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const lengthSelect = document.getElementById('length');
     const platformSelect = document.getElementById('platform');
 
-    // Original length options for social media
-    const socialMediaLengthOptions = [
-        { value: '', text: 'Vyberte délku...' },
-        { value: 'short', text: 'Krátký (50-100 slov)' },
-        { value: 'medium', text: 'Střední (100-200 slov)' },
-        { value: 'long', text: 'Dlouhý (200-300 slov)' }
-    ];
-
-    // Blog article length options
-    const blogLengthOptions = [
-        { value: '', text: 'Vyberte délku...' },
-        { value: 'short', text: 'Krátký (400-500 slov)' },
-        { value: 'medium', text: 'Střední (600-800 slov)' },
-        { value: 'long', text: 'Dlouhý (900-1200 slov)' },
-        { value: 'extra-long', text: 'Extra dlouhý (1500-2000 slov)' }
-    ];
+    // Length options for each content type
+    const delkaOptions = {
+        // Sociální sítě (default)
+        default: [
+            { value: '', text: 'Vyberte délku...' },
+            { value: 'kratky', text: 'Krátký (50-100 slov)' },
+            { value: 'stredni', text: 'Střední (100-200 slov)' },
+            { value: 'dlouhy', text: 'Dlouhý (200-300 slov)' }
+        ],
+        // Blogový článek
+        'blogovy-clanek': [
+            { value: '', text: 'Vyberte délku...' },
+            { value: 'kratky', text: 'Krátký (400-500 slov)' },
+            { value: 'stredni', text: 'Střední (600-800 slov)' },
+            { value: 'dlouhy', text: 'Dlouhý (900-1200 slov)' },
+            { value: 'extra-dlouhy', text: 'Extra dlouhý (1500-2000 slov)' }
+        ],
+        // Newsletter
+        'newsletter': [
+            { value: '', text: 'Vyberte délku...' },
+            { value: 'kratky', text: 'Krátký (150-250 slov)' },
+            { value: 'stredni', text: 'Střední (300-450 slov)' },
+            { value: 'dlouhy', text: 'Dlouhý (500-700 slov)' }
+        ],
+        // Emailing
+        'emailing': [
+            { value: '', text: 'Vyberte délku...' },
+            { value: 'kratky', text: 'Krátký (75-125 slov)' },
+            { value: 'stredni', text: 'Střední (150-250 slov)' },
+            { value: 'dlouhy', text: 'Dlouhý (300-400 slov)' }
+        ]
+    };
 
     // Function to update length options based on platform
     function updateLengthOptions(platform) {
-        const options = platform === 'blogovy-clanek' ? blogLengthOptions : socialMediaLengthOptions;
+        const options = delkaOptions[platform] || delkaOptions.default;
 
         // Store current selection
         const currentValue = lengthSelect.value;
@@ -687,18 +703,22 @@ ${content}
             content += `🎯 Cílová skupina: ${data.targetAudience}\n\n`;
         }
 
-        if (data.length === 'short') {
+        if (data.length === 'kratky') {
             content += `Krátký příspěvek o tématu "${data.topic}" je ideální pro rychlé sdílení. `;
             content += `Zaujměte své publikum stručným, ale působivým sdělením. 💡\n\n`;
-        } else if (data.length === 'medium') {
+        } else if (data.length === 'stredni') {
             content += `Střední příspěvek vám umožňuje více rozvinout téma "${data.topic}". `;
             content += `Poskytněte svému publiku zajímavé informace a praktické tipy. `;
             content += `Nezapomeňte zahrnout výzvu k akci! 🚀\n\n`;
-        } else {
+        } else if (data.length === 'dlouhy') {
             content += `Dlouhý příspěvek o tématu "${data.topic}" nabízí prostor pro hloubkovou analýzu. `;
             content += `Můžete sdílet své zkušenosti, poskytovat cenné rady a vytvářet silné spojení s publikem. `;
             content += `Delší obsah často generuje větší zapojení a diskuze. `;
             content += `Ujistěte se, že je váš text dobře strukturovaný a snadno čitelný! 📚\n\n`;
+        } else if (data.length === 'extra-dlouhy') {
+            content += `Extra dlouhý příspěvek o tématu "${data.topic}" je ideální pro hloubkovou analýzu. `;
+            content += `Rozviňte téma do více sekcí s podnadpisy pro lepší čitelnost. `;
+            content += `Poskytněte komplexní pohled na problematiku. 📖\n\n`;
         }
 
         // Add strategy-based content

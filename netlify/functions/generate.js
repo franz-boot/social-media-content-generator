@@ -27,8 +27,7 @@ export async function handler(event) {
         const prompt = buildPrompt(formData, strategy);
 
         // Determine max_tokens based on content type and length
-        const isExtraLongBlog = formData.platform === 'blogovy-clanek' && formData.length === 'extra-long';
-        const maxTokens = isExtraLongBlog ? 2000 : 1000;
+        const maxTokens = getMaxTokens(formData.platform, formData.length);
 
         // Call OpenAI API
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -116,31 +115,31 @@ function buildPrompt(formData, strategy) {
         inspirational: 'inspirativní a motivační'
     };
 
-    // Length descriptions based on content type
-    const getLengthDescription = (platform, length) => {
+    // Length descriptions based on content type (using Czech values)
+    const getDelkaInstructions = (platform, length) => {
         const lengthByPlatform = {
             'blogovy-clanek': {
-                short: 'Článek by měl mít 400-500 slov',
-                medium: 'Článek by měl mít 600-800 slov',
-                long: 'Článek by měl mít 900-1200 slov',
-                'extra-long': 'Článek by měl mít 1500-2000 slov, rozděl do více sekcí s podnadpisy'
+                kratky: '400-500 slov',
+                stredni: '600-800 slov',
+                dlouhy: '900-1200 slov',
+                'extra-dlouhy': '1500-2000 slov, více sekcí s podnadpisy'
             },
             'newsletter': {
-                short: '150 slov',
-                medium: '250 slov',
-                long: '400 slov'
+                kratky: '150-250 slov',
+                stredni: '300-450 slov',
+                dlouhy: '500-700 slov'
             },
             'emailing': {
-                short: '100 slov',
-                medium: '200 slov',
-                long: '300 slov'
+                kratky: '75-125 slov, stručný a úderný',
+                stredni: '150-250 slov',
+                dlouhy: '300-400 slov'
             }
         };
 
         const defaultLengths = {
-            short: '50-100 slov',
-            medium: '100-200 slov',
-            long: '200-300 slov'
+            kratky: '50-100 slov',
+            stredni: '100-200 slov',
+            dlouhy: '200-300 slov'
         };
 
         return lengthByPlatform[platform]?.[length] || defaultLengths[length] || length;
@@ -169,7 +168,7 @@ function buildPrompt(formData, strategy) {
     prompt += `**Téma:** ${formData.topic}\n`;
     prompt += `**Platforma:** ${platformDescriptions[formData.platform] || formData.platform}\n`;
     prompt += `**Tón:** ${toneDescriptions[formData.tone] || formData.tone}\n`;
-    prompt += `**Délka:** ${getLengthDescription(formData.platform, formData.length)}\n`;
+    prompt += `**Délka:** ${getDelkaInstructions(formData.platform, formData.length)}\n`;
     prompt += `**STDC fáze:** ${stdcDescriptions[formData.stdcPhase] || formData.stdcPhase}\n`;
 
     if (formData.targetAudience) {
@@ -229,4 +228,31 @@ function buildPrompt(formData, strategy) {
     prompt += `\nVygeneruj pouze samotný text příspěvku, bez dalšího komentáře.`;
 
     return prompt;
+}
+
+// Determine max_tokens based on platform and length
+function getMaxTokens(platform, length) {
+    // Blogový článek
+    if (platform === 'blogovy-clanek') {
+        if (length === 'kratky' || length === 'stredni') {
+            return 1500;
+        } else if (length === 'dlouhy') {
+            return 2000;
+        } else if (length === 'extra-dlouhy') {
+            return 3000;
+        }
+    }
+
+    // Newsletter
+    if (platform === 'newsletter') {
+        return 1000;
+    }
+
+    // Emailing
+    if (platform === 'emailing') {
+        return 600;
+    }
+
+    // Sociální sítě (default)
+    return 500;
 }
